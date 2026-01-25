@@ -1,24 +1,25 @@
+const express = require('express');
 require('dotenv').config();
 
-const express = require('express');
-const { sequelize } = require('./config/database'); // database now sees env vars
-
+const { sequelize } = require('./models');
+const routes = require('./routes/index.routes');
 const app = express();
-const PORT = process.env.PORT;
 
 app.use(express.json());
-app.use('/api', require('./routes/index.routes'));
-app.get('/', (req, res) => res.send('Hello World!'));//test if working
+app.use('/api', routes);
+
+app.get('/', (req, res) => res.send('Hello World!'));
 
 (async () => {
     try {
         await sequelize.authenticate();
         console.log('Database connected');
 
-        app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-        });
+        app.listen(process.env.PORT || 3000, () =>
+        console.log(`Server running on port ${process.env.PORT || 3000}`)
+        );
     } catch (err) {
         console.error('Database connection failed:', err);
+        process.exit(1);
     }
 })();

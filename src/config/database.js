@@ -1,14 +1,21 @@
-const { Sequelize, DataTypes } = require("sequelize");
-const UserModel = require("../models/user");
-const dbConfig = require("./db.config");
+const path = require('path');
+const dotenv = require('dotenv');
 
-const sequelize = new Sequelize(
-    dbConfig.database,
-    dbConfig.username,
-    dbConfig.password,
-    dbConfig
-);
+// Load correct env file based on NODE_ENV
+const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
+dotenv.config({ path: path.resolve(process.cwd(), envFile) });
 
-const User = UserModel(sequelize, DataTypes);
-
-module.exports = { sequelize,User};
+module.exports = {
+    database: process.env.DB_NAME,
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    dialect: process.env.DB_DIALECT || "mssql",
+    dialectOptions: {
+        options: {
+        encrypt: false,
+        trustServerCertificate: true
+        }
+    }
+};

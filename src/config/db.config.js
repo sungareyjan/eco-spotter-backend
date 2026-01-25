@@ -1,4 +1,6 @@
 require('dotenv').config();
+console.log('Sequelize NODE_ENV:', process.env.NODE_ENV);
+console.log('Using DB:', process.env.DB_NAME);
 
 module.exports = {
     database: process.env.DB_NAME,
@@ -14,3 +16,4 @@ module.exports = {
         }
     }
 };
+
