@@ -16,6 +16,7 @@ RUN pnpm install
 # Copy app source code
 COPY . .
 
+
 # Expose endpoint /port (Always to port sa docker)
 # Machine port and container port inside the container
 EXPOSE 3000

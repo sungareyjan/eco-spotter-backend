@@ -20,7 +20,8 @@ module.exports = {
         encrypt: false,
         trustServerCertificate: true
         }
-    }
+    },
+    autoCreateDatabase: process.env.AUTO_CREATE_DB === "true",
     },
 
     test: {

@@ -2,10 +2,12 @@
 A platform to identify, track, and report environmental hotspots. Discover, monitor, and protect our environment with Eco-Spotter.
 
 
-## Quick Guide: Node + Sequelize + MSSQL
 
 ### Install dependencies
 pnpm install sequelize sequelize-cli tedious dotenv
+
+## Quick Guide: Node + Sequelize + MSSQL
+npm install -g pnpm
 
 ### Configure environment variables
 
@@ -17,10 +19,19 @@ Start your Docker containers:
 
 docker-compose up -d
 
+Check that the MSSQL container is running:
+
+docker ps
+
+then run again if app not run
+
+docker-compose up -d
+
 ### Set up Sequelize configuration
 
 Configure Sequelize to use your environment variables to connect to the database.
 
+change your DB_HOST to localhost for dev and test
 ### Create the database (if it doesn’t exist)
 pnpm sequelize-cli db:create
 
@@ -36,7 +47,7 @@ pnpm build
 
 Make sure your package.json has a build script (e.g., tsc for TypeScript or bundler for JavaScript).
 
-### Run the application
+### Run the application if needed
 pnpm start
 
 
