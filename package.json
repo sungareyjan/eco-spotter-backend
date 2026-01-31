@@ -2,7 +2,11 @@
 	"scripts": {
 		"start": "node src/app.js",
 		"dev": "nodemon src/app.js",
-		"test": "set ENV_FILE=.env.tes NODE_ENV=test && jest --detectOpenHandles --forceExit"
+		"test": "set ENV_FILE=.env.tes NODE_ENV=test && jest --detectOpenHandles --forceExit",
+		"migrate":"pnpm sequelize-cli db:migrate",
+		"drop":"pnpm sequelize-cli db:migrate:undo",
+		"seed":"pnpm sequelize-cli db:seed:all",
+		"check":"DEBUG=sequelize:* pnpm sequelize-cli db:seed:all"
 	},
 	"dependencies": {
 		"bcrypt": "^6.0.0",
