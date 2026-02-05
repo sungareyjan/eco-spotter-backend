@@ -1,48 +1,37 @@
 const UserService = require('../services/user.service');
 
-const getAllUsersAccess = async (req, res) => {
-try {
-	const users = await UserService.getAllUsersWithAccess();
+const getAllUsersAccess = async (req, res, next) => {
+	try {
+		const users = await UserService.getAllUsersWithAccess();
 
-	res.json({
-	success: true,
-	data: users
-	});
-} catch (err) {
-	console.error(err);
-	res.status(500).json({
-	success: false,
-	message: 'Failed to fetch users',
-	error: err.message
-	});
-}
+		res.json({
+			success: true,
+			data: users
+		});
+	} catch (error) {
+		next(error);
+	}
 };
 
 const getAllUserByPublicId = async (req, res) => {
-try {
-	const { publicId } = req.params; // <-- get publicId from URL
+	try {
+		const { publicId } = req.params;
 
-	const user = await UserService.getUserByPublicId(publicId); // <-- pass it here
+		const user = await UserService.getUserByPublicId(publicId);
+		if (!user) {
+			return res.status(404).json({
+				success: false,
+				message: 'User not found'
+			});
+		}
 
-	if (!user) {
-	return res.status(404).json({
-		success: false,
-		message: 'User not found'
-	});
+		res.json({
+			success: true,
+			data: user
+		});
+	} catch (error) {
+		next(error);
 	}
-
-	res.json({
-	success: true,
-	data: user
-	});
-} catch (err) {
-	console.error(err);
-	res.status(500).json({
-	success: false,
-	message: 'Failed to fetch user',
-	error: err.message
-	});
-}
 };
 
 module.exports = { getAllUsersAccess, getAllUserByPublicId };

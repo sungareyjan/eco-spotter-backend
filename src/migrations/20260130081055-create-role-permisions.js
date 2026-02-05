@@ -1,23 +1,23 @@
+'use strict';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('role_users', {
+        await queryInterface.createTable('role_permissions', {
             id: {
                 type: Sequelize.BIGINT,
                 allowNull: false,
                 autoIncrement: true,
-                primaryKey: true
+                primaryKey: true,
             },
             roleId: {
                 type: Sequelize.BIGINT,
                 allowNull: false,
                 field: 'role_id',
-                defaultValue: 4
             },
-            userId: {
+            permissionId: {
                 type: Sequelize.BIGINT,
                 allowNull: false,
-                field: 'user_id',
+                field: 'permission_id'
             },
             createdAt: {
                 type: Sequelize.DATE,
@@ -33,11 +33,11 @@ module.exports = {
             }
         });
 
-        // Add constraints separately
-        await queryInterface.addConstraint('role_users', {
+        // Explicit foreign key constraints with custom names
+        await queryInterface.addConstraint('role_permissions', {
             fields: ['role_id'],
             type: 'foreign key',
-            name: 'FK_role_users_role',
+            name: 'FK_role_permissions_role',
             references: {
                 table: 'roles',
                 field: 'id'
@@ -46,12 +46,12 @@ module.exports = {
             onDelete: 'CASCADE'
         });
 
-        await queryInterface.addConstraint('role_users', {
-            fields: ['user_id'],
+        await queryInterface.addConstraint('role_permissions', {
+            fields: ['permission_id'],
             type: 'foreign key',
-            name: 'FK_role_users_user',
+            name: 'FK_role_permissions_permission',
             references: {
-                table: 'users',
+                table: 'permissions',
                 field: 'id'
             },
             onUpdate: 'CASCADE',
@@ -60,8 +60,9 @@ module.exports = {
     },
 
     async down(queryInterface, Sequelize) {
-        await queryInterface.removeConstraint('role_users', 'FK_role_users_role');
-        await queryInterface.removeConstraint('role_users', 'FK_role_users_user');
-        await queryInterface.dropTable('role_users');
+        // Remove constraints first before dropping table
+        await queryInterface.removeConstraint('role_permissions', 'FK_role_permissions_role');
+        await queryInterface.removeConstraint('role_permissions', 'FK_role_permissions_permission');
+        await queryInterface.dropTable('role_permissions');
     }
 };

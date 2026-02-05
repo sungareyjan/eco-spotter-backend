@@ -8,26 +8,26 @@ async function waitForMssql(maxRetries = 10, delay = 3000) {
 
     while (retries > 0) {
         try {
-        const sequelize = new Sequelize(
-            'master',
-            dbConfig.username,
-            dbConfig.password,
-            {
-            host: dbConfig.host,
-            port: dbConfig.port,
-            dialect: dbConfig.dialect,
-            dialectOptions: dbConfig.dialectOptions,
-            logging: false,
-            }
-        );
+            const sequelize = new Sequelize(
+                'master',
+                dbConfig.username,
+                dbConfig.password,
+                {
+                    host: dbConfig.host,
+                    port: dbConfig.port,
+                    dialect: dbConfig.dialect,
+                    dialectOptions: dbConfig.dialectOptions,
+                    logging: false,
+                }
+            );
 
-        await sequelize.authenticate();
-        console.log('MSSQL is ready');
-        return sequelize;
+            await sequelize.authenticate();
+            console.log('MSSQL is ready');
+            return sequelize;
         } catch (err) {
-        retries--;
-        console.log(`Waiting for MSSQL... retries left: ${retries}`);
-        await sleep(delay);
+            retries--;
+            console.log(`Waiting for MSSQL... retries left: ${retries}`);
+            await sleep(delay);
         }
     }
 

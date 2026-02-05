@@ -1,4 +1,3 @@
-
 const db = require("../models");
 const User = db.User;
 
@@ -26,7 +25,7 @@ const createUser = async (req, res) => {
 
 
 // Find a user by ID
-    const getUserById = async (req, res) => {
+const getUserById = async (req, res) => {
     try {
         const { id } = req.params;
         const user = await User.findByPk(id);

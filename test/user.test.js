@@ -23,10 +23,21 @@ let userId;
     it('should create a user', async () => {
         const res = await request(app)
         .post('/api/users')
-        .send({ username: 'john', email: 'john@example.com', password: '123456' });
+        .send({
+                firstName    : 'Maria Clara',
+                middleName   : 'de los',
+                lastName     : 'Santos',
+                extensionName: null,
+                username     : 'maria',
+                email        : 'maria@gmail.com',
+                gender       : 'female',
+                birthday     : '1992-07-12',
+                status       : 'active',
+                password     : '123456',
+            });
 
         expect(res.statusCode).toBe(201);
-        expect(res.body.username).toBe('john');
+        expect(res.body.username).toBe('maria');
         userId = res.body.id;
     });
 
@@ -43,29 +54,29 @@ let userId;
         const res = await request(app).get(`/api/users/${userId}`);
         expect(res.statusCode).toBe(200);
         expect(res.body.id).toBe(userId);
-        expect(res.body.username).toBe('john');
+        expect(res.body.username).toBe('maria');
     });
 
     // UPDATE user (PUT)
     it('should update a user completely', async () => {
         const res = await request(app)
         .put(`/api/users/${userId}`)
-        .send({ username: 'john_updated', email: 'john_updated@example.com', password: 'newpass123' });
+        .send({ username: 'maria_updated', email: 'maria_updated@example.com', password: 'newpass123' });
 
         expect(res.statusCode).toBe(200);
-        expect(res.body.username).toBe('john_updated');
-        expect(res.body.email).toBe('john_updated@example.com');
+        expect(res.body.username).toBe('maria_updated');
+        expect(res.body.email).toBe('maria_updated@example.com');
     });
 
     // PATCH user (partial update)
     it('should partially update a user', async () => {
         const res = await request(app)
         .patch(`/api/users/${userId}`)
-        .send({ username: 'john_patched' });
+        .send({ username: 'maria_patched' });
 
         expect(res.statusCode).toBe(200);
-        expect(res.body.username).toBe('john_patched');
-        expect(res.body.email).toBe('john_updated@example.com');
+        expect(res.body.username).toBe('maria_patched');
+        expect(res.body.email).toBe('maria_updated@example.com');
     });
 
     // DELETE user
