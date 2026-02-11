@@ -3,7 +3,7 @@ const { User, RoleUser, Role, RolePermission, Permission, UserProfile } = requir
 class UserService {
     async getAllUsersWithAccess() {
         const users = await User.findAll({
-            attributes: ['publicId', 'firstName', 'middleName', 'lastName', 'extensionName', 'username', 'email', 'gender', 'birthday', 'status'],
+            attributes: ['publicId', 'username', 'email', 'status'],
             include   : this._userIncludes()
         });
 
@@ -13,7 +13,7 @@ class UserService {
     async getUserByPublicId(publicId) {
         const user = await User.findOne({
             where     : { publicId },
-            attributes: ['publicId', 'firstName', 'middleName', 'lastName', 'extensionName', 'username', 'email', 'gender', 'birthday', 'status'],
+            attributes: ['publicId',  'username', 'email', 'status'],
             include   : this._userIncludes()
         });
 
@@ -47,14 +47,8 @@ class UserService {
         return {
             user: {
                 publicId     : user.publicId,
-                firstName    : user.firstName,
-                middleName   : user.middleName,
-                lastName     : user.lastName,
-                extensionName: user.extensionName,
                 username     : user.username,
                 email        : user.email,
-                gender       : user.gender,
-                birthday     : user.birthday,
                 status       : user.status,
                 profiles
             },
