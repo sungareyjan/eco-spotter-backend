@@ -13,7 +13,7 @@ const getAllUsersAccess = async (req, res, next) => {
 	}
 };
 
-const getAllUserByPublicId = async (req, res) => {
+const getAllUserByPublicId = async (req, res, next) => {
 	try {
 		const { publicId } = req.params;
 

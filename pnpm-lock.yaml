@@ -20,6 +20,9 @@ importers:
       init:
         specifier: ^0.1.2
         version: 0.1.2
+      jsonwebtoken:
+        specifier: ^9.0.3
+        version: 9.0.3
       sequelize:
         specifier: ^6.37.7
         version: 6.37.7(tedious@19.2.0)

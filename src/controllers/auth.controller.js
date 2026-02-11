@@ -33,7 +33,7 @@ const register = async (req, res, next) => {
         }
     };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
         try {
             //  Validate input fields
             const loginRules = {

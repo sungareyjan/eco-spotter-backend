@@ -3,16 +3,17 @@
 		"start": "node src/app.js",
 		"dev": "nodemon src/app.js",
 		"test": "set ENV_FILE=.env.tes NODE_ENV=test && jest --detectOpenHandles --forceExit",
-		"migrate":"pnpm sequelize-cli db:migrate",
-		"drop":"pnpm sequelize-cli db:migrate:undo",
-		"seed":"pnpm sequelize-cli db:seed:all",
-		"check":"DEBUG=sequelize:* pnpm sequelize-cli db:seed:all"
+		"migrate": "pnpm sequelize-cli db:migrate",
+		"drop": "pnpm sequelize-cli db:migrate:undo",
+		"seed": "pnpm sequelize-cli db:seed:all",
+		"check": "DEBUG=sequelize:* pnpm sequelize-cli db:seed:all"
 	},
 	"dependencies": {
 		"bcrypt": "^6.0.0",
 		"dotenv": "^17.2.3",
 		"express": "^5.2.1",
 		"init": "^0.1.2",
+		"jsonwebtoken": "^9.0.3",
 		"sequelize": "^6.37.7",
 		"sequelize-cli": "^6.6.5",
 		"tedious": "^19.2.0",
