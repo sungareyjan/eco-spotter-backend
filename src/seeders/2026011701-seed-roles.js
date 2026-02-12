@@ -1,11 +1,11 @@
 'use strict';
-const { v4: uuidv4 } = require('uuid');
 
 module.exports = {
     async up(queryInterface, Sequelize) {
+        const { v4: uuidv4 } = await import('uuid');
 
         const roles = [
-            { name: 'admin', displayName: 'Administrator', description: 'Admin Users: manage user, manage report and restriction (like block a user when do some ilegaly or agaits the rule)' },
+            { name: 'admin', displayName: 'Administrator', description: 'Admin Users: manage user, manage report and restriction (like block a user when do some illegally or against the rule)' },
             { name: 'advance', displayName: 'Advanced Users', description: 'Advanced Users: Researchers, educators, NGOs, or policy makers analyzing aggregated data, Manage users, analyze trends, access aggregated observations' },
             { name: 'intermediate', displayName: 'Intermediate Users', description: 'Intermediate Users: Students, hobbyists, or nature enthusiasts contributing regularly, Enhanced Access: Search/filter maps, receive notifications, export data' },
             { name: 'casual', displayName: 'Casual User', description: 'Casual Users: General public interested in observing and learning about biodiversity, Basic Access: Submit and view personal observations' }

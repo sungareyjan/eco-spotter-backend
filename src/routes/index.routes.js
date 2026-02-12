@@ -7,7 +7,7 @@ const roleRoutes = require('./role.routes');
 const userRoutes = require('./user.routes');
 
 // example
-router.use('/users-example', userExampleRoutes);
+router.use('/user-examples', userExampleRoutes);
 
 // API endpoints
 router.use('/', authRoutes);

@@ -53,16 +53,15 @@ class AuthService {
     }
 
     async register(payload) {
-
         const transaction = await sequelize.transaction();
         try {
             const { username, email, password } = payload;
 
-            if (await User.findOne({ where: { email } })) {
+            // check existing email/username
+            if (await User.findOne({ where: { email }, transaction })) {
                 throw new Error('Email already in use');
             }
-
-            if (await User.findOne({ where: { username } })) {
+            if (await User.findOne({ where: { username }, transaction })) {
                 throw new Error('Username already in use');
             }
 
@@ -72,11 +71,11 @@ class AuthService {
                 username,
                 email,
                 password: hashedPassword,
-            }, { transaction: transaction });
+            }, { transaction });
 
             await RoleUser.create({
                 user_id: user.id,
-            }, { transaction: transaction });
+            }, { transaction });
 
             await transaction.commit();
 
@@ -86,7 +85,10 @@ class AuthService {
             };
 
         } catch (error) {
-            await transaction.rollback();
+            // Only rollback if transaction is not finished
+            if (!transaction.finished) {
+                await transaction.rollback();
+            }
             throw error;
         }
     }

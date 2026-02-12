@@ -22,7 +22,7 @@ let userId;
     // CREATE user
     it('should create a user', async () => {
         const res = await request(app)
-        .post('/api/users')
+        .post('/api/user-examples')
         .send({
                 firstName    : 'Maria Clara',
                 middleName   : 'de los',
@@ -43,7 +43,7 @@ let userId;
 
     // FIND ALL users
     it('should return all users', async () => {
-        const res = await request(app).get('/api/users');
+        const res = await request(app).get('/api/user-examples');
         expect(res.statusCode).toBe(200);
         expect(Array.isArray(res.body)).toBe(true);
         expect(res.body.length).toBeGreaterThan(0);
@@ -51,7 +51,7 @@ let userId;
 
     // GET user by ID
     it('should return a single user by ID', async () => {
-        const res = await request(app).get(`/api/users/${userId}`);
+        const res = await request(app).get(`/api/user-examples/${userId}`);
         expect(res.statusCode).toBe(200);
         expect(res.body.id).toBe(userId);
         expect(res.body.username).toBe('maria');
@@ -60,7 +60,7 @@ let userId;
     // UPDATE user (PUT)
     it('should update a user completely', async () => {
         const res = await request(app)
-        .put(`/api/users/${userId}`)
+        .put(`/api/user-examples/${userId}`)
         .send({ username: 'maria_updated', email: 'maria_updated@example.com', password: 'newpass123' });
 
         expect(res.statusCode).toBe(200);
@@ -71,7 +71,7 @@ let userId;
     // PATCH user (partial update)
     it('should partially update a user', async () => {
         const res = await request(app)
-        .patch(`/api/users/${userId}`)
+        .patch(`/api/user-examples/${userId}`)
         .send({ username: 'maria_patched' });
 
         expect(res.statusCode).toBe(200);
@@ -81,12 +81,12 @@ let userId;
 
     // DELETE user
     it('should delete a user', async () => {
-        const res = await request(app).delete(`/api/users/${userId}`);
+        const res = await request(app).delete(`/api/user-examples/${userId}`);
         expect(res.statusCode).toBe(200);
         expect(res.body.message).toBe('User deleted successfully');
 
         // Confirm user is deleted
-        const check = await request(app).get(`/api/users/${userId}`);
+        const check = await request(app).get(`/api/user-examples/${userId}`);
         expect(check.statusCode).toBe(404);
     });
 });

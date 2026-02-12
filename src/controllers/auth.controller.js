@@ -29,6 +29,7 @@ const register = async (req, res, next) => {
             });
 
         } catch (error) {
+            console.error('Registration error:', error);
             next(error); //  centralized error handler
         }
     };

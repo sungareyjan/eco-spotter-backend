@@ -1,9 +1,9 @@
 'use strict';
 const bcrypt = require('bcrypt');
-const { v4: uuidv4 } = require('uuid');
 
 module.exports = {
     async up(queryInterface, Sequelize) {
+        const { v4: uuidv4 } = await import('uuid');
         const passwordPlain = 'password123'; // default password for seeding
         const passwordHash = await bcrypt.hash(passwordPlain, 10);
 

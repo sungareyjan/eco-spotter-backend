@@ -3,7 +3,7 @@ const router = express.Router();
 const usersController = require('../controllers/users.controller');
 
 // GET all users with roles + permissions
-router.get('/', usersController.getAllUsersAccess);
+router.get('', usersController.getAllUsersAccess);
 
 // GET all users by public id
 router.get('/:publicId', usersController.getAllUserByPublicId);
