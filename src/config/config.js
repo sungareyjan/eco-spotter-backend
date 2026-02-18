@@ -15,7 +15,7 @@ module.exports = {
         host: process.env.DB_HOST,
         port: process.env.DB_PORT,
         dialect: process.env.DB_DIALECT || 'mssql',
-        // logging: false,
+        logging: false,
         dialectOptions: {
             options: {
                 encrypt: false,

@@ -21,5 +21,5 @@ COPY . .
 # Machine port and container port inside the container
 EXPOSE 3000
 
-# Start app
-CMD ["node","src/app.js"]
+# Start server
+CMD ["node","src/server.js"]

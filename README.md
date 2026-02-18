@@ -26,13 +26,13 @@ if powershell
  docker exec -it eco-app /bin/sh
 
 ### Create the database (if it doesn’t exist)
-pnpm sequelize-cli db:create
+pnpm create
 
 ### Run migrations
-pnpm sequelize-cli db:migrate
+pnpm migrate
 
 ### Seed the database
-pnpm sequelize-cli db:seed:all
+pnpm seed:all
 
 ### Verify setup
 Open your browser or API client (postman) and check that the application is running. Confirm tables and seed data exist in your database.
@@ -59,7 +59,7 @@ docker ps
 In your docker-compose.yml under the node-app service, you can specify the env file for testing:
 
 env_file:
-  # - .env          # development
+  # - .env         # development
   - .env.test      # uncomment when running tests
 
 

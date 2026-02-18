@@ -39,9 +39,15 @@ class UserService {
 
         const profiles = {};
         if (user.profile) {
-            if (user.profile.bio) profiles.bio = user.profile.bio;
-            if (user.profile.homeRegion) profiles.homeRegion = user.profile.homeRegion;
+            if (user.profile.bio) profiles.bio                             = user.profile.bio;
+            if (user.profile.homeRegion) profiles.homeRegion               = user.profile.homeRegion;
             if (user.profile.profilePictureUrl) profiles.profilePictureUrl = user.profile.profilePictureUrl;
+            if (user.profile.firstName) profiles.firstName                 = user.profile.firstName;
+            if (user.profile.middleName) profiles.middleName               = user.profile.middleName;
+            if (user.profile.lastName) profiles.lastName                   = user.profile.lastName;
+            if (user.profile.extensionName) profiles.extensionName         = user.profile.extensionName;
+            if (user.profile.gender) profiles.gender                       = user.profile.gender;
+            if (user.profile.birthday) profiles.birthday                   = user.profile.birthday;
         }
 
         return {
@@ -92,7 +98,17 @@ class UserService {
                 model     : UserProfile,
                 as        : 'profile',
                 required  : false,
-                attributes: ['bio', 'homeRegion', 'profilePictureUrl']
+                attributes: [
+                    'bio',
+                    'homeRegion',
+                    'profilePictureUrl',
+                    'firstName',
+                    'middleName',
+                    'lastName',
+                    'extensionName',
+                    'gender',
+                    'birthday'
+                ]
             }
         ];
     }

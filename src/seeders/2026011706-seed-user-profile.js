@@ -2,7 +2,6 @@
 
 module.exports = {
     async up(queryInterface) {
-        // Get the first 4 users
         const users = await queryInterface.sequelize.query(
             `SELECT TOP (4) id FROM users ORDER BY id`,
             {
@@ -12,20 +11,33 @@ module.exports = {
 
         if (!users.length) return;
 
-        // Create profiles for each user
         const profilesToInsert = users.map((user, index) => {
+            const firstNames = ['Admin', 'Juan', 'Pedro', 'Maria'];
+            const middleNames = [null, 'Santos', null, 'Reyes'];
+            const lastNames = ['Admin', 'Dela Cruz', 'Penduko', 'Clara'];
+            const extensionNames = [null, null, 'Jr.', null];
+
+            const birthdays = [
+                '1990-01-15',
+                '1995-06-20',
+                '1993-09-10',
+                '1998-12-05',
+            ];
+
+            const genders = ['Male', 'Male', 'Male', 'Female'];
+
             const bios = [
                 'Nature enthusiast, loves birds',
                 'Botany student and tree lover',
                 'Passionate about wildlife photography',
-                'Passionate about wildlife photography',
+                'Marine biodiversity advocate',
             ];
 
             const regions = [
                 'Central Luzon',
                 'Calabarzon',
                 'Bicol Region',
-                'Bicol Region',
+                'Ilocos Region',
             ];
 
             const pictures = [
@@ -35,29 +47,19 @@ module.exports = {
                 'https://ecospotter.com/app/avatar4.png',
             ];
 
-            const firstName = [
-                'Admin',
-                'Juan',
-                'Pedro',
-                'Maria',
-            ];
-
-            const lastName = [
-                'Admin',
-                'Dela cruz',
-                'Penduko',
-                'Clara',
-            ];
-
             return {
-                user_id            : user.id,
-                first_name         : firstName[index],
-                last_name          : lastName[index],
-                bio                : bios[index] || 'Nature enthusiast',
-                home_region        : regions[index] || 'Central Luzon',
-                profile_picture_url: pictures[index] || 'https://ecospotter.com/app/default.png',
-                created_at         : new Date(),
-                updated_at         : new Date(),
+                user_id: user.id,
+                first_name: firstNames[index],
+                middle_name: middleNames[index],     // some null
+                last_name: lastNames[index],
+                extension_name: extensionNames[index], // some null
+                birthday: birthdays[index],
+                gender: genders[index],
+                bio: bios[index],
+                home_region: regions[index],
+                profile_picture_url: pictures[index],
+                created_at: new Date(),
+                updated_at: new Date(),
             };
         });
 
