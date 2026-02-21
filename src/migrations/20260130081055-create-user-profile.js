@@ -19,25 +19,21 @@ module.exports = {
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             },
-            firstName: {
+            first_name: {
                 type: Sequelize.STRING(50),
                 allowNull: false,
-                field: 'first_name'
             },
-            middleName: {
+            middle_name: {
                 type: Sequelize.STRING(50),
                 allowNull: true,
-                field: 'middle_name'
             },
-            lastName: {
+            last_name: {
                 type: Sequelize.STRING(50),
                 allowNull: false,
-                field: 'last_name'
             },
-            extensionName: {
+            extension_name: {
                 type: Sequelize.STRING(50),
                 allowNull: true,
-                field: 'extension_name'
             },
             gender: {
                 type: Sequelize.ENUM('male', 'female', 'other', 'prefer_not_to_say'),

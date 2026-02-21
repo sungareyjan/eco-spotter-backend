@@ -2,9 +2,18 @@
 
 module.exports = (sequelize, DataTypes) => {
     const RoleUser = sequelize.define('RoleUser', {
-        id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
-        userId: { type: DataTypes.BIGINT, field: 'user_id' },
-        roleId: { type: DataTypes.BIGINT, field: 'role_id' }
+        id: {
+            type: DataTypes.BIGINT,
+            autoIncrement: true,
+            primaryKey: true },
+        userId: {
+            type: DataTypes.BIGINT,
+            field: 'user_id'
+        },
+        roleId: {
+            type: DataTypes.BIGINT,
+            field: 'role_id'
+        }
     }, {
         tableName: 'role_users',
         underscored: true,

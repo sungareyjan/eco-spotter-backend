@@ -1,4 +1,4 @@
-const { User, RoleUser, Role, RolePermission, Permission, UserProfile } = require('../models');
+const { User, RoleUser, Role, UserProfile } = require('../models');
 
 class UserService {
     async getAllUsersWithAccess() {
@@ -22,7 +22,6 @@ class UserService {
         return this._formatUser(user);
     }
 
- 
     // Private method to format user data
     _formatUser(user) {
         const roles = (user.role_users || [])
@@ -76,21 +75,21 @@ class UserService {
                         as        : 'role',
                         required  : false,
                         attributes: ['name'],
-                        include   : [
-                            {
-                                model   : RolePermission,
-                                as      : 'role_permissions',
-                                required: false,
-                                include : [
-                                    {
-                                        model     : Permission,
-                                        as        : 'permission',
-                                        required  : false,
-                                        attributes: ['name']
-                                    }
-                                ]
-                            }
-                        ]
+                        // include   : [
+                        //     {
+                        //         model   : RolePermission,
+                        //         as      : 'role_permissions',
+                        //         required: false,
+                        //         include : [
+                        //             {
+                        //                 model     : Permission,
+                        //                 as        : 'permission',
+                        //                 required  : false,
+                        //                 attributes: ['name']
+                        //             }
+                        //         ]
+                        //     }
+                        // ]
                     }
                 ]
             },
@@ -114,6 +113,5 @@ class UserService {
     }
 
 }
-
 
 module.exports = new UserService();

@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const usersController = require('../controllers/users.controller');
+const UserController = require('../controllers/users.controller');
 
 // GET all users with roles + permissions
-router.get('', usersController.getAllUsersAccess);
+router.get('', UserController.getAllUsersAccess);
 
 // GET all users by public id
-router.get('/:publicId', usersController.getAllUserByPublicId);
+router.get('/:publicId', UserController.getAllUserByPublicId);
 
 module.exports = router;

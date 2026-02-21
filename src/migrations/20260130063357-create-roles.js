@@ -20,27 +20,24 @@ module.exports = {
                 allowNull: false,
                 unique: true
             },
-            displayName: {
+            display_name: {
                 type: Sequelize.STRING(50),
                 allowNull: false,
                 unique: true,
-                field: 'display_name'
             },
             description: {
-                type: Sequelize.STRING,
+                type: Sequelize.TEXT,
                 allowNull: true
             },
-            createdAt: {
+            created_at: {
                 type: Sequelize.DATE,
                 allowNull: false,
                 defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-                field: 'created_at'
             },
             updated_at: {
                 type: Sequelize.DATE,
                 allowNull: false,
                 defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-                field: 'updated_at'
             }
         });
     },

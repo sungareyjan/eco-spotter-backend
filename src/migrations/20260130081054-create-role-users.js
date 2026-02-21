@@ -8,28 +8,24 @@ module.exports = {
                 autoIncrement: true,
                 primaryKey: true
             },
-            roleId: {
+            role_id: {
                 type: Sequelize.BIGINT,
                 allowNull: false,
-                field: 'role_id',
                 defaultValue: 4
             },
-            userId: {
+            user_id: {
                 type: Sequelize.BIGINT,
                 allowNull: false,
-                field: 'user_id',
             },
-            createdAt: {
+            created_at: {
                 type: Sequelize.DATE,
                 allowNull: false,
                 defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-                field: 'created_at'
             },
-            updatedAt: {
+            updated_at: {
                 type: Sequelize.DATE,
                 allowNull: false,
                 defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-                field: 'updated_at'
             }
         });
 

@@ -3,7 +3,9 @@ const validateFields = require('../utils/validate-fields');
 const codes = require('../errors/codes');
 const { errorTypes } = require('../errors/errors');
 
-const register = async (req, res, next) => {
+class AuthController{
+
+    async  register (req, res, next){
         try {
 
             const { email, password, username } = req.body;
@@ -34,7 +36,7 @@ const register = async (req, res, next) => {
         }
     };
 
-const login = async (req, res, next) => {
+    async login(req, res, next){
         try {
             //  Validate input fields
             const loginRules = {
@@ -66,4 +68,6 @@ const login = async (req, res, next) => {
         }
     }
 
-module.exports ={register,login};
+}
+
+module.exports = new AuthController();

@@ -9,10 +9,9 @@ module.exports = {
                 autoIncrement: true,
                 primaryKey: true
             },
-            publicId: {
+            public_id: {
                 type: Sequelize.UUID,
                 allowNull: false,
-                field: 'public_id',
                 unique: true
             },
             username: {
@@ -34,28 +33,24 @@ module.exports = {
                 allowNull: false,
                 defaultValue: 'active'
             },
-            isVerified: {
+            is_verified: {
                 type: Sequelize.BOOLEAN,
                 allowNull: false,
                 defaultValue: false,
-                field: 'is_verified',
             },
-            deletedAt: {
+            deleted_at: {
                 type: Sequelize.DATE,
                 allowNull: true,
-                field: 'deleted_at'
             },
-            createdAt: {
+            created_at: {
                 type: Sequelize.DATE,
                 allowNull: false,
                 defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-                field: 'created_at'
             },
-            updatedAt: {
+            updated_at: {
                 type: Sequelize.DATE,
                 allowNull: false,
                 defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-                field: 'updated_at'
             }
         });
     },
