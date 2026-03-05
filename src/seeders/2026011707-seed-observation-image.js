@@ -6,7 +6,7 @@ module.exports = {
         await queryInterface.bulkInsert('observation_images', [
             {
                 public_id: uuidv4(),
-                observation_id: 1, // make sure this exists
+                observation_id: 2, // make sure this exists
                 image_path: 'uploads/observations/obs1-image1.jpg',
                 thumbnail_path: 'uploads/observations/thumb-obs1-image1.jpg',
                 mime_type: 'image/jpeg',
@@ -15,8 +15,17 @@ module.exports = {
             },
             {
                 public_id: uuidv4(),
-                observation_id: 1,
+                observation_id: 2,
                 image_path: 'uploads/observations/obs1-image2.jpg',
+                thumbnail_path: null,
+                mime_type: 'image/png',
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+            {
+                public_id: uuidv4(),
+                observation_id: 1,
+                image_path: 'uploads/observations/obs2-image1.jpg',
                 thumbnail_path: null,
                 mime_type: 'image/png',
                 created_at: new Date(),

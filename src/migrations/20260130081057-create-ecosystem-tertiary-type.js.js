@@ -11,18 +11,20 @@ async up(queryInterface, Sequelize) {
     },
 
     public_id: {
-        type: Sequelize.CHAR(36),
+        type: Sequelize.UUID,
         allowNull: false,
         unique: true,
+        defaultValue: Sequelize.literal('NEWID()'),
     },
 
-    ecosystem_secondary_type_id: {
-        type: Sequelize.BIGINT,
-        allowNull: true,
-        // Foreign key can be added later:
-        // references: { model: 'ecosystem_type', key: 'id' },
-        // onUpdate: 'CASCADE',
-        // onDelete: 'SET NULL',
+    ecosystem_primary_type:{
+        type:Sequelize.STRING(250),
+        allowNull: false,
+    },
+    
+    ecosystem_secondary_type:{
+        type:Sequelize.STRING(250),
+        allowNull: false,
     },
 
     name: {

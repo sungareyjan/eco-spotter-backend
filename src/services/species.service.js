@@ -46,19 +46,9 @@ class SpeciesService {
                         'publicId',
                         'name',
                         'keyCharacteristics',
+                        'ecosystemPrimaryType',
+                        'ecosystemSecondaryType',
                     ],
-                    include: [{
-                        model: EcosystemSecondaryType,
-                        as: 'ecosystemSecondaryType',
-                        attributes: [
-                            'publicId',
-                            'name',
-                        ],
-                        include: [{
-                            model: EcosystemPrimaryType,
-                            as: 'ecosystemPrimaryType'
-                        }]
-                    }]
                 }]
             }],
             offset,
@@ -72,17 +62,15 @@ class SpeciesService {
             scientificName: species.scientificName,
             subtypeId: species.ecosystemSpecificType?.publicId,
             ecosystems: [{
-                subtypeName: species.ecosystemSpecificType?.name,
                 subtypeCharacteristics: species.ecosystemSpecificType?.keyCharacteristics,
+                subtypeName: species.ecosystemSpecificType?.name,
 
-                specificTypeId: species.ecosystemSpecificType?.ecosystemTertiaryType?.publicId,
-                specificTypeName: species.ecosystemSpecificType?.ecosystemTertiaryType?.name,
+                primaryType: species.ecosystemSpecificType?.ecosystemTertiaryType?.ecosystemPrimaryType,
+                secondaryType: species.ecosystemSpecificType?.ecosystemTertiaryType?.ecosystemSecondaryType,
                 tertiaryTypeCharacteristic: species.ecosystemSpecificType?.ecosystemTertiaryType?.keyCharacteristics,
+                tertiaryTypeId: species.ecosystemSpecificType?.ecosystemTertiaryType?.publicId,
+                specificTypeName: species.ecosystemSpecificType?.ecosystemTertiaryType?.name,
 
-                secondaryTypeId: species.ecosystemSpecificType?.ecosystemTertiaryType?.ecosystemSecondaryType?.publicId,
-                secondaryType: species.ecosystemSpecificType?.ecosystemTertiaryType?.ecosystemSecondaryType?.name,
-
-                primaryType: species.ecosystemSpecificType?.ecosystemTertiaryType?.ecosystemSecondaryType?.ecosystemPrimaryType?.name,
 
             }]
 

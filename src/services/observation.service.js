@@ -1,7 +1,7 @@
 const { Observation, User, ObservationImage, Species, EcosystemSpecificType, EcosystemTertiaryType, EcosystemSecondaryType, EcosystemPrimaryType } = require('../models');
 
 /**
- * Get all species with optional search and pagination
+ * Get observation with optional search and pagination
  * @param {Object} options
  * @param {string} options.search - search term for species name or scientificName
  * @param {number} options.page - page number (1- indexed)
@@ -82,20 +82,9 @@ class ObservationService {
                             'publicId',
                             'name',
                             'keyCharacteristics',
+                            'ecosystemPrimaryType',
+                            'ecosystemSecondaryType',
                         ],
-                        include: [{
-                            model: EcosystemSecondaryType,
-                            as: 'ecosystemSecondaryType',
-                            attributes: [
-                                'publicId',
-                                'name',
-                            ],
-                            include: [{
-                                model: EcosystemPrimaryType,
-                                as: 'ecosystemPrimaryType',
-                                attributes: ['name']
-                            }]
-                        }]
                     }]
                 }],
             }]
@@ -106,7 +95,55 @@ class ObservationService {
         });
 
         // todo map data
-        const data = rows;
+        const data = rows.map(obs => {
+            const specific = obs.species?.ecosystemSpecificType;
+            const primary = specific?.ecosystemTertiaryType.ecosystemPrimaryType;
+            const secondary = specific?.ecosystemTertiaryType.ecosystemSecondaryType;
+            const tertiary = specific?.ecosystemTertiaryType.name;
+            const specificType = obs.species?.ecosystemSpecificType.name;
+            return {
+                publicId: obs.publicId,
+                observation: {
+                    kingdomGroup: obs.kingdomGroup,
+                    description: obs.description,
+                    observedAt: obs.observedAt,
+                    status: obs.status
+                },
+                location: {
+                    name: obs.locationName,
+                    coordinates: {
+                        latitude: obs.latitude,
+                        longitude: obs.longitude
+                    }
+                },
+                species: obs.species ? {
+                    publicId: obs.publicId,
+                    commonName: obs.species.name,
+                    ecosystem: primary ? {
+                        primaryType: primary,
+                        secondaryType: secondary,
+                        tertiaryType: tertiary,
+                        specificType: specificType,
+                    } : null
+                } : null,
+                observer: obs.creator
+                    ? {
+                        publicId: obs.creator.publicId,
+                        username: obs.creator.username
+                    }
+                    : null,
+                images: obs.ObservationImages?.map(img => ({
+                    publicId: img.publicId,
+                    imageUrl: img.imagePath,
+                    thumbnailUrl: img.thumbnailPath,
+                    mimeType: img.mimeType
+                })) || [],
+
+                timestamps: {
+                createdAt: obs.createdAt
+                }
+            }
+        });
 
         return { data, pagination: { total: count, page, limit, totalPages: Math.ceil(count / limit) } }
 

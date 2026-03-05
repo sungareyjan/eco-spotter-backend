@@ -17,10 +17,20 @@ module.exports = (sequelize, DataTypes) => {
                 field:'public_id'
             },
 
-            ecosystemSecondaryTypeId: {
-                type: DataTypes.BIGINT,
+            // ecosystemSecondaryTypeId: {
+            //     type: DataTypes.BIGINT,
+            //     allowNull: true,
+            //     field:'ecosystem_secondary_type_id'
+            // },
+            ecosystemPrimaryType: {
+                type: DataTypes.STRING,
                 allowNull: true,
-                field:'ecosystem_secondary_type_id'
+                field:'ecosystem_primary_type'
+            },
+            ecosystemSecondaryType: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                field:'ecosystem_secondary_type'
             },
 
             name: {
@@ -52,7 +62,7 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
     EcosystemTertiaryType.associate = models => {
-        EcosystemTertiaryType.belongsTo(models.EcosystemSecondaryType, { foreignKey: 'ecosystemSecondaryTypeId', as: 'ecosystemSecondaryType' });
+        // EcosystemTertiaryType.belongsTo(models.EcosystemSecondaryType, { foreignKey: 'ecosystemSecondaryTypeId', as: 'ecosystemSecondaryType' });
         EcosystemTertiaryType.hasMany(models.EcosystemSpecificType, { foreignKey: 'ecosystemTertiaryTypeId', as: 'ecosystemSpecificType' });
     };
     return EcosystemTertiaryType;
