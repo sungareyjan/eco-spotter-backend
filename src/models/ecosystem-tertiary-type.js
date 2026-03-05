@@ -17,11 +17,6 @@ module.exports = (sequelize, DataTypes) => {
                 field:'public_id'
             },
 
-            // ecosystemSecondaryTypeId: {
-            //     type: DataTypes.BIGINT,
-            //     allowNull: true,
-            //     field:'ecosystem_secondary_type_id'
-            // },
             ecosystemPrimaryType: {
                 type: DataTypes.STRING,
                 allowNull: true,

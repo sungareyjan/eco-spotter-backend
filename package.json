@@ -1,13 +1,13 @@
 {
 	"scripts": {
-		"start"  : "node src/server.js",
-		"dev"    : "nodemon src/server.js",
-		"test"   : "set ENV_FILE=.env.tes NODE_ENV=test && jest --detectOpenHandles --forceExit",
+		"start": "node src/server.js",
+		"dev": "nodemon src/server.js",
+		"test": "set ENV_FILE=.env.tes NODE_ENV=test && jest --detectOpenHandles --forceExit",
 		"migrate": "pnpm sequelize-cli db:migrate",
-		"drop"   : "pnpm sequelize-cli db:migrate:undo",
-		"create" : "pnpm sequelize-cli db:create",
-		"seed"   : "pnpm sequelize-cli db:seed:all",
-		"check"  : "DEBUG=sequelize:* pnpm sequelize-cli db:seed:all"
+		"drop": "pnpm sequelize-cli db:migrate:undo",
+		"create": "pnpm sequelize-cli db:create",
+		"seed": "pnpm sequelize-cli db:seed:all",
+		"check": "DEBUG=sequelize:* pnpm sequelize-cli db:seed:all"
 	},
 	"dependencies": {
 		"bcrypt": "^6.0.0",
@@ -17,6 +17,8 @@
 		"jsonwebtoken": "^9.0.3",
 		"sequelize": "^6.37.7",
 		"sequelize-cli": "^6.6.5",
+		"swagger-jsdoc": "^6.2.8",
+		"swagger-ui-express": "^5.0.1",
 		"tedious": "^19.2.0",
 		"uuid": "8.3.2"
 	},
