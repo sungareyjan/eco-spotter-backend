@@ -11,9 +11,9 @@ module.exports = {
             },
 
             public_id: {
-                type: Sequelize.CHAR(36),
+                type: Sequelize.UUID,
                 allowNull: false,
-                unique: true,
+                unique: true
             },
 
             species_id: {

@@ -11,11 +11,10 @@ async up(queryInterface, Sequelize) {
     },
 
     public_id: {
-        type: Sequelize.CHAR(36),
+        type: Sequelize.UUID,
         allowNull: false,
-        unique: true,
+        unique: true
     },
-
     observation_id: {
         type: Sequelize.BIGINT,
         allowNull: false,

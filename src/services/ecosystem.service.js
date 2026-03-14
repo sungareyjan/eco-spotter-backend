@@ -1,5 +1,5 @@
 const { EcosystemSpecificType, EcosystemTertiaryType} = require('../models');
-    const {SECONDARY_TYPES,HABITAT_VALUES} = require('../constants/ecosystem.constants');
+const {SECONDARY_TYPES,HABITAT_VALUES} = require('../constants/ecosystem.constants');
 const { Op } = require('sequelize');
 
 class EcosystemService{

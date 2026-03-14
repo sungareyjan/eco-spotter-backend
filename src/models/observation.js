@@ -10,11 +10,13 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
             },
 
+
             publicId: {
-                type: DataTypes.CHAR(36),
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
+                field: 'public_id',
                 allowNull: false,
-                unique: true,
-                field:'public_id'
+                unique: true
             },
 
             speciesId: {

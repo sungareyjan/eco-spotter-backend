@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const upload = require('../middlewares/upload.middleware');
 const  ObservationController = require('../controllers/observation.controller');
 /**
  * @swagger
@@ -143,5 +144,6 @@ const  ObservationController = require('../controllers/observation.controller');
  *                       example: 1
  */
 router.get('/',ObservationController.getAllObservation);
+router.post('/create',upload.single('image'),ObservationController.postObservation);
 
 module.exports = router;
