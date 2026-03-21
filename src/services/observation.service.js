@@ -1,5 +1,5 @@
 const { sequelize,Observation, User, ObservationImage, Species, EcosystemSpecificType, EcosystemTertiaryType, EcosystemSecondaryType, EcosystemPrimaryType } = require('../models');
-
+const storage = require('../services/storage.service');
 /**
  * Get observation with optional search and pagination
  * @param {Object} options
@@ -151,64 +151,101 @@ class ObservationService {
 
     }
 
-    async createObservation(payload) {
+    async createObservation(payload,logger) {
         let t; // define outside try
+        const { file, storageKey, createdBy, speciesId, kingdomGroup, description, observedAt, latitude, longitude, locationName, images, proposedSpeciesId } = payload;
+
         try {
             t = await sequelize.transaction(); // start transaction
-            console.log("Payload:", payload);
-
-            const {
-                speciesId,
-                proposedSpeciesId,
-                kingdomGroup,
-                description,
-                observedAt,
-                latitude,
-                longitude,
-                locationName,
+            console.log('Payload:', payload);
+            // Upload file to MinIO
+            logger.app.info({
                 createdBy,
-                images
-            } = payload;
+                endpoint: 'createObservation',
+                payloadSummary: {
+                    hasFile: !!file,
+                    locationName,
+                    speciesId
+                },
+                message: 'Starting observation creation'
+            });
 
-            if (!payload) throw new Error("Payload is required");
+            if (!payload) {
+                logger.app.warn({
+                    createdBy,
+                    message: 'Payload is empty'
+                });
+                throw new Error('Payload is required');
+            }
+            // Upload file to MinIO
+            if (file && storageKey) {
+                await storage.upload(file.buffer, storageKey, file.mimetype);
+                logger.app.info({
+                    createdBy,
+                    storageKey,
+                    message: 'File uploaded to MinIO successfully'
+                });
+            }
+            // Validate species
             const species = await Species.findOne({
                 where: { publicId: speciesId }
             });
 
             if (!species) {
-                throw new Error("Species not found");
+                logger.app.warn({
+                    createdBy,
+                    speciesId,
+                    message: 'Species not found'
+                });
+                throw new Error('Species not found');
             }
 
-            if (!payload) throw new Error("Payload is required");
             const user = await User.findOne({
                 where: { publicId: createdBy }
             });
 
             if (!user) {
-                throw new Error("User not found");
+                logger.app.warn({
+                    createdBy,
+                    message: 'User not found'
+                });
+                throw new Error('User not found');
             }
             // Create observation
             const observation = await Observation.create({
                 speciesId: species.id,
-                // proposedSpeciesId: Number(proposedSpeciesId),
+                proposedSpeciesId: proposedSpeciesId || null,
                 kingdomGroup,
                 description,
-                observedAt: new Date(observedAt),  // make sure it's a Date
+                observedAt: new Date(observedAt),
                 latitude: parseFloat(latitude),
                 longitude: parseFloat(longitude),
                 locationName,
                 createdBy: user.id
             }, { transaction: t });
 
+            logger.app.info({
+                createdBy,
+                observationId: observation.id,
+                message: 'Observation record created in DB'
+            });
             // Create associated images
             if (Array.isArray(images) && images.length > 0) {
-            for (const img of images) {
-                await ObservationImage.create({
-                observationId: observation.id,
-                imagePath: img.imagePath,
-                mimeType: img.mimeType
-                }, { transaction: t });
-            } }
+                for (const img of images) {
+                    await ObservationImage.create({
+                    observationId: observation.id,
+                    imagePath: img.imagePath,
+                    mimeType: img.mimeType
+                    }, { transaction: t });
+
+                    logger.app.info({
+                        createdBy,
+                        observationId: observation.id,
+                        imagePath: img.imagePath,
+                        message: 'Observation image saved in DB'
+                    });
+                }
+            }
 
             const createdObservation = await Observation.findByPk(observation.id, {
                 include: [
@@ -246,6 +283,11 @@ class ObservationService {
             });
 
             await t.commit(); // commit transaction
+            logger.app.info({
+                createdBy,
+                observationId: observation.id,
+                message: 'Transaction committed successfully'
+            })
             const obs = createdObservation.toJSON();
 
             const ecosystemSpecific = obs.species?.ecosystemSpecificType;
@@ -294,13 +336,23 @@ class ObservationService {
             return formatted;
 
         } catch (error) {
-            console.error("CreateObservation ERROR:", error);
+            console.error('CreateObservation ERROR:', error);
             // Only rollback if transaction actually started
             if (t) {
                 try {
                     await t.rollback();
+                    logger.app.warn({
+                        createdBy,
+                        message: 'Transaction rolled back due to error'
+                    });
                 } catch (rollbackError) {
-                    console.error("Rollback failed:", rollbackError);
+                    logger.app.error({
+                        createdBy,
+                        error: rollbackError.message,
+                        stack: rollbackError.stack,
+                        message: 'Rollback failed'
+                    });
+                    console.error('Rollback failed:', rollbackError);
                 }
             }
             throw error;

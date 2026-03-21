@@ -144,6 +144,6 @@ const  ObservationController = require('../controllers/observation.controller');
  *                       example: 1
  */
 router.get('/',ObservationController.getAllObservation);
-router.post('/create',upload.single('image'),ObservationController.postObservation);
+router.post('/',upload.single('image'),ObservationController.postObservation);
 
 module.exports = router;

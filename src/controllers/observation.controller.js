@@ -1,8 +1,8 @@
 const { status } = require('init');
 const ObservationService = require('../services/observation.service');
-const storage = require("../services/storage.service");
 const validateFields = require('../utils/validate-fields');
-
+const { v4: uuidv4 } = require('uuid');
+const path = require('path');
 
 class ObservationController{
 
@@ -28,81 +28,116 @@ class ObservationController{
     }
 
     async postObservation(req, res, next) {
+        const endpoint = 'POST /observations';
+        const userId = req.body.createdBy || 'unknown';
 
         try {
-        if (!req.file) return res.status(400).json({ error: "Image required" });
 
-        // Validate required fields from form-data
-        const requiredFields = [
-            'speciesId',
-            'kingdomGroup',
-            'observedAt',
-            'latitude',
-            'longitude',
-            'locationName',
-            'createdBy'
-        ];
-
-        const missingFields = validateFields(req.body, requiredFields);
-        if (missingFields.length > 0) {
-            return res.status(400).json({
-                error: `Missing required fields: ${missingFields.join(', ')}`
+            req.logger.app.info({
+                endpoint,
+                userId,
+                hasFile: !!req.file,
+                body: {
+                    speciesId: req.body.speciesId,
+                    kingdomGroup: req.body.kingdomGroup,
+                    observedAt: req.body.observedAt,
+                    latitude: req.body.latitude,
+                    longitude: req.body.longitude,
+                    locationName: req.body.locationName,
+                    createdBy: req.body.createdBy,
+                },
+                message: 'Incoming observation request'
             });
-        }
 
-        // Upload file to MinIO
-        const { v4: uuidv4 } = require('uuid');
-        const path = require('path');
+            // Check file
+            if (!req.file) {
+                req.logger.app.warn({
+                    endpoint,
+                    userId,
+                    message: 'Image not provided in request'
+                });
+                return res.status(400).json({ error: 'Image required' });
+            }
 
-        const userId = req.body.createdBy;
-        const file = req.file;
+            // Validate required fields from form-data
+            const requiredFields = [
+                'speciesId',
+                'kingdomGroup',
+                'observedAt',
+                'latitude',
+                'longitude',
+                'locationName',
+                'createdBy'
+            ];
 
-        // folder date
-        const today = new Date().toISOString().split('T')[0]; // 2026-03-14
+            const missingFields = validateFields(req.body, requiredFields);
+            if (missingFields.length > 0) {
+                req.logger.app.warn({
+                    endpoint,
+                    userId,
+                    missingFields,
+                    message: 'Missing required fields'
+                });
+                return res.status(400).json({
+                    error: `Missing required fields: ${missingFields.join(', ')}`
+                });
+            }
 
-        // keep original extension (.jpg, .png)
-        const ext = path.extname(file.originalname);
+            // Upload file to MinIO
+            // const userId = req.body.createdBy;
+            const file = req.file;
 
-        // generate unique filename
-        const filename = `${uuidv4()}${ext}`;
+            // folder date
+            const today = new Date().toISOString().split('T')[0]; // 2026-03-14
+            const ext = path.extname(file.originalname);
+            const filename = `${uuidv4()}${ext}`;
+            const key = `observations/${userId}/${today}/${filename}`;
+            // await storage.upload(file.buffer, key, file.mimetype);
 
-        // build storage path
-        const key = `observations/${userId}/${today}/${filename}`;
+            // Prepare payload for service
+            const observationPayload = {
+                speciesId        : req.body.speciesId,
+                proposedSpeciesId: req.body.proposedSpeciesId || null,
+                kingdomGroup     : req.body.kingdomGroup,
+                description      : req.body.description || null,
+                observedAt       : req.body.observedAt,
+                latitude         : req.body.latitude,
+                longitude        : req.body.longitude,
+                locationName     : req.body.locationName,
+                createdBy        : userId,
+                file: req.file, // pass file to service
+                storageKey       : key
+            };
 
-        // upload to MinIO
-        await storage.upload(file.buffer, key, file.mimetype);
+            // Create observation
+            const observation = await ObservationService.createObservation(observationPayload,req.logger);
 
-        // Prepare payload for service
-        const observationPayload = {
-            speciesId        : req.body.speciesId,
-            proposedSpeciesId: req.body.proposedSpeciesId || null,
-            kingdomGroup     : req.body.kingdomGroup,
-            description      : req.body.description || null,
-            observedAt       : req.body.observedAt,
-            latitude         : req.body.latitude,
-            longitude        : req.body.longitude,
-            locationName     : req.body.locationName,
-            createdBy        : req.body.createdBy,
-            images           : [
-                {
-                    imagePath: key,
-                    mimeType : file.mimetype
-                }
-            ]
-        };
+            // Log success
+            req.logger.app.info({
+                endpoint,
+                userId,
+                observationId: observation.id,
+                key,
+                message: 'Observation successfully created'
+            });
 
-        // Create observation
-        const observation = await ObservationService.createObservation(observationPayload);
-
-        res.status(201).json({
-            status : 'success',
-            code   : 201,
-            message: "Uploaded",
-            data   : observation
-        });
+            res.status(201).json({
+                status : 'success',
+                code   : 201,
+                message: 'Uploaded',
+                data   : observation
+            });
 
         } catch (error) {
-            console.error("UPLOAD ERROR:", error);
+            console.error('UPLOAD ERROR:', error);
+             // Log error
+            req.logger.app.error({
+                endpoint,
+                userId,
+                error: error.message,
+                stack: error.stack,
+                message: 'Failed to create observation'
+            });
             next(error);
         }
     }
