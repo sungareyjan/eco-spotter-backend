@@ -14,6 +14,14 @@ services:
     depends_on:
       - mssql
       - minio
+      - redis
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
 
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -49,3 +57,4 @@ services:
 volumes:
   mssql_data:
   minio_data:
+  redis_data:

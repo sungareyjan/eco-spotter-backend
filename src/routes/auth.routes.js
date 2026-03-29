@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const AuthController = require('../controllers/auth.controller');
+
+const rateLimitMiddleware = require('../middlewares/rate-limiter.middleware');
+const { authLimiter, refreshLimiter,logoutLimiter } = require('../config/rate-limiter');
 /**
  * @swagger
  * tags:
@@ -71,7 +74,7 @@ const AuthController = require('../controllers/auth.controller');
  *       401:
  *         description: Unauthorized (invalid email or password)
  */
-router.post('/login', AuthController.login);
+router.post('/login', rateLimitMiddleware(authLimiter), AuthController.login);
 
 /**
  * @swagger
@@ -154,10 +157,10 @@ router.post('/login', AuthController.login);
  *         description: Missing or invalid fields
  */
 
-router.post('/register', AuthController.register);
+router.post('/register', rateLimitMiddleware(authLimiter), AuthController.register);
 
-router.post('/refresh', AuthController.refreshToken);
-router.post('/logout', AuthController.logout);
+router.post('/refresh',  rateLimitMiddleware(refreshLimiter),AuthController.refreshToken);
+router.post('/logout',rateLimitMiddleware(logoutLimiter),AuthController.logout);
 
 
 module.exports = router;

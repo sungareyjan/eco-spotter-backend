@@ -6,7 +6,10 @@ const errorHandler = require('./middlewares/error-handler.middleware');
 
 const requestIdMiddleware = require('./middlewares/request-id.middleware');
 const loggerMiddleware = require('./middlewares/logger.middleware');
-const responseTimeMiddleware = require('./middlewares/response-time.middleware')
+const responseTimeMiddleware = require('./middlewares/response-time.middleware');
+
+const rateLimitMiddleware = require('./middlewares/rate-limiter.middleware');
+const { globalLimiter } = require('./config/rate-limiter')
 
 const app = express();
 
@@ -17,6 +20,7 @@ app.use(requestIdMiddleware);
 
 app.use(loggerMiddleware);
 app.use(responseTimeMiddleware);
+app.use('/api', rateLimitMiddleware(globalLimiter));
 app.use('/api', routes);
 setupSwagger(app);
 app.use(errorHandler);
