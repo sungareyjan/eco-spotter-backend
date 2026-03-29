@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
-const JWT_REFRESH_EXPIRES_IN =process.env.JWT_REFRESH_EXPIRES_IN;
+const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN;
 
 class AuthService {
 
@@ -37,7 +37,6 @@ class AuthService {
 
     buildUserResponse(user) {
         const userData = user.get ? user.get({ plain: true }) : user;
-
         return {
             publicId     : userData.publicId,
             firstName    : userData.firstName,
@@ -57,7 +56,6 @@ class AuthService {
         try {
             const { username, email, password } = payload;
 
-            // check existing email/username
             if (await User.findOne({ where: { email }, transaction })) {
                 throw new Error('Email already in use');
             }
@@ -73,9 +71,7 @@ class AuthService {
                 password: hashedPassword,
             }, { transaction });
 
-            await RoleUser.create({
-                user_id: user.id,
-            }, { transaction });
+            await RoleUser.create({ user_id: user.id }, { transaction });
 
             await transaction.commit();
 
@@ -85,7 +81,6 @@ class AuthService {
             };
 
         } catch (error) {
-            // Only rollback if transaction is not finished
             if (!transaction.finished) {
                 await transaction.rollback();
             }
@@ -102,25 +97,23 @@ class AuthService {
 
         return {
             auth: this.buildAuthResponse(user),
-            user: {
-                publicId: user.publicId,
-                email   : user.email,
-                username: user.username
-            }
+            user: this.buildUserResponse(user)
         };
     }
-
 
     async refreshToken(token) {
         try {
             const payload = jwt.verify(token, JWT_REFRESH_SECRET);
-            const user = await User.findByPk(payload.id);
+            // const user = await User.findByPk(payload.id);
+            const user = await User.findOne({
+                where: { publicId: payload.id }
+            });
             if (!user) throw new Error('User not found');
 
             return {
                 accessToken: this.generateAccessToken(user),
-                tokenType  : 'Bearer',
-                expiresIn  : JWT_EXPIRES_IN
+                tokenType: 'Bearer',
+                expiresIn: JWT_EXPIRES_IN
             };
         } catch {
             throw new Error('Invalid or expired refresh token');

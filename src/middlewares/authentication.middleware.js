@@ -2,22 +2,19 @@ const jwt = require('jsonwebtoken');
 const { errorTypes } = require('../errors/errors'); // centralized errors
 
 const authenticateJWT = (req, res, next) => {
-const authHeader = req.headers.authorization;
+    //  to read token from cookie first, fallback to Authorization header
+    const token = req.cookies?.accessToken || req.headers.authorization?.split(' ')[1];
 
-    if (!authHeader) {
-        // Pass error to centralized handler
-        return next(errorTypes.Unauthorized("No token provided"));
+    if (!token) {
+        return next(errorTypes.Unauthorized("No access token provided"));
     }
-
-    const token = authHeader.split(' ')[1];
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        next(); // token valid → continue
+        req.user = decoded; // attach user payload to request
+        next(); // token is valid
     } catch (err) {
-        // Pass invalid token error to centralized handler code 403
-        return next(errorTypes.Forbidden("Invalid token"));
+        return next(errorTypes.Forbidden("Invalid or expired access token"));
     }
 };
 

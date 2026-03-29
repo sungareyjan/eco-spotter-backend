@@ -12,6 +12,7 @@
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.1004.0",
 		"bcrypt": "^6.0.0",
+		"cookie-parser": "^1.4.7",
 		"dotenv": "^17.2.3",
 		"express": "^5.2.1",
 		"init": "^0.1.2",

@@ -3,11 +3,16 @@ const validateFields = require('../utils/validate-fields');
 const codes = require('../errors/codes');
 const { errorTypes } = require('../errors/errors');
 
-class AuthController{
+const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'Strict',
+};
 
-    async  register (req, res, next){
+class AuthController {
+
+    async register(req, res, next) {
         try {
-
             const { email, password, username } = req.body;
             const invalidFields = [];
             if (!email) invalidFields.push('email');
@@ -23,43 +28,67 @@ class AuthController{
 
             const result = await authService.register(req.body);
 
+            // Set cookies
+            res.cookie('accessToken', result.auth.accessToken, {
+                ...cookieOptions,
+                maxAge: parseInt(result.auth.expiresIn) * 1000
+            });
+            res.cookie('refreshToken', result.auth.refreshToken, {
+                ...cookieOptions,
+                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+            });
+
             res.status(201).json({
-                status : 'success',
-                code   : 201,
+                status: 'success',
+                code: 201,
                 message: 'User registered successfully',
-                data   : result
+                data: {
+                    user: result.user
+                }
             });
 
         } catch (error) {
             console.error('Registration error:', error);
-            next(error); //  centralized error handler
+            next(error);
         }
-    };
+    }
 
-    async login(req, res, next){
+    async login(req, res, next) {
         try {
-            //  Validate input fields
             const loginRules = {
-                email   : { required: true, type: 'email' },
+                email: { required: true, type: 'email' },
                 password: { required: true, type: 'string' },
             };
 
             const invalidFields = validateFields(req.body, loginRules);
-
             if (invalidFields.length > 0) {
                 return res.status(400).json({
-                    code   : codes.VALIDATION_ERROR,       // code 12
-                    message: 'invalid format of fields',
-                    fields : invalidFields
+                    code: codes.VALIDATION_ERROR,
+                    message: 'Invalid format of fields',
+                    fields: invalidFields
                 });
             }
 
-            //  Proceed to login via service
             const { email, password } = req.body;
             const result = await authService.login(email, password);
 
-            //  Return login result (JWT + user info)
-            res.json(result);
+            // Set cookies
+            res.cookie('accessToken', result.auth.accessToken, {
+                ...cookieOptions,
+                maxAge: parseInt(result.auth.expiresIn) * 1000
+            });
+            res.cookie('refreshToken', result.auth.refreshToken, {
+                ...cookieOptions,
+                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+            });
+
+            res.json({
+                status: 'success',
+                message: 'Login successful',
+                data: {
+                    user: result.user
+                }
+            });
 
         } catch (error) {
             next(
@@ -68,6 +97,38 @@ class AuthController{
         }
     }
 
+    async refreshToken(req, res, next) {
+        try {
+            const token = req.cookies?.refreshToken;
+            console.log("COOKIE TOKEN:", req.cookies?.refreshToken);
+            if (!token) return next(errorTypes.Unauthorized("No refresh token"));
+
+            const newAuth = await authService.refreshToken(token);
+
+            // Set new access token cookie
+            res.cookie('accessToken', newAuth.accessToken, {
+                ...cookieOptions,
+                maxAge: parseInt(newAuth.expiresIn) * 1000
+            });
+
+            res.json({
+                status: 'success',
+                message: 'Access token refreshed'
+            });
+
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async logout(req, res) {
+        res.clearCookie('accessToken', cookieOptions);
+        res.clearCookie('refreshToken', cookieOptions);
+        res.status(200).json({
+            status: 'success',
+            message: 'Logged out successfully'
+        });
+    }
 }
 
 module.exports = new AuthController();

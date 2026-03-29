@@ -2,7 +2,7 @@ const { AuditTrails } = require('../models');
 
 class AuditTrailService {
     static async log(data) {
-             console.log('data')
+            console.log('data')
         try {
             console.log('data3')
             // Ensure proper nulls and JSON
