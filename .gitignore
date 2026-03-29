@@ -142,3 +142,6 @@ vite.config.ts.timestamp-*
 # Uploads / storage
 uploads/
 storage
+
+#pnpm
+.pnpm-store

@@ -1,4 +1,4 @@
-const DynamicLogger = require('./DynamicLogger');
+const DynamicLogger = require('./dynamic-logger');
 
 const appLogger = new DynamicLogger('app', 'info').instance;
 const errorLogger = new DynamicLogger('error', 'error').instance;

@@ -8,13 +8,13 @@ const loggerMiddleware = require('./middlewares/logger.middleware');
 const responseTimeMiddleware = require('./middlewares/response-time.middleware')
 const app = express();
 
+app.set('trust proxy', true);
 app.use(express.json());
 
 app.use(requestIdMiddleware);
 
 app.use(loggerMiddleware);
 app.use(responseTimeMiddleware);
-
 app.use('/api', routes);
 setupSwagger(app);
 app.use(errorHandler);

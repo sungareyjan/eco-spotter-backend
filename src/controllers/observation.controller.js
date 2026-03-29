@@ -1,6 +1,7 @@
-const { status } = require('init');
 const ObservationService = require('../services/observation.service');
 const validateFields = require('../utils/validate-fields');
+const { extractClientInfo } = require('../utils/device-info');
+const { logEvent, auditEvent } = require('../utils/log-and-audit');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 
@@ -28,119 +29,117 @@ class ObservationController{
     }
 
     async postObservation(req, res, next) {
-        const endpoint = 'POST /observations';
-        const userId = req.body.createdBy || 'unknown';
+            const endpoint = 'POST /observations';
+            const userId = req.body.createdBy || 'unknown';
+            const client = extractClientInfo(req);
 
-        try {
-
-            req.logger.app.info({
-                endpoint,
-                userId,
-                hasFile: !!req.file,
-                body: {
-                    speciesId: req.body.speciesId,
-                    kingdomGroup: req.body.kingdomGroup,
-                    observedAt: req.body.observedAt,
-                    latitude: req.body.latitude,
-                    longitude: req.body.longitude,
-                    locationName: req.body.locationName,
-                    createdBy: req.body.createdBy,
-                },
-                message: 'Incoming observation request'
-            });
-
-            // Check file
-            if (!req.file) {
-                req.logger.app.warn({
-                    endpoint,
-                    userId,
-                    message: 'Image not provided in request'
-                });
-                return res.status(400).json({ error: 'Image required' });
-            }
-
-            // Validate required fields from form-data
-            const requiredFields = [
-                'speciesId',
-                'kingdomGroup',
-                'observedAt',
-                'latitude',
-                'longitude',
-                'locationName',
-                'createdBy'
-            ];
-
-            const missingFields = validateFields(req.body, requiredFields);
-            if (missingFields.length > 0) {
-                req.logger.app.warn({
-                    endpoint,
-                    userId,
-                    missingFields,
-                    message: 'Missing required fields'
-                });
-                return res.status(400).json({
-                    error: `Missing required fields: ${missingFields.join(', ')}`
-                });
-            }
-
-            // Upload file to MinIO
-            // const userId = req.body.createdBy;
-            const file = req.file;
-
-            // folder date
-            const today = new Date().toISOString().split('T')[0]; // 2026-03-14
-            const ext = path.extname(file.originalname);
-            const filename = `${uuidv4()}${ext}`;
-            const key = `observations/${userId}/${today}/${filename}`;
-            // await storage.upload(file.buffer, key, file.mimetype);
-
-            // Prepare payload for service
-            const observationPayload = {
+            const buildAuditRequest = () => ({
                 speciesId        : req.body.speciesId,
-                proposedSpeciesId: req.body.proposedSpeciesId || null,
                 kingdomGroup     : req.body.kingdomGroup,
+                proposedSpeciesId: req.body.proposedSpeciesId || null,
                 description      : req.body.description || null,
                 observedAt       : req.body.observedAt,
                 latitude         : req.body.latitude,
                 longitude        : req.body.longitude,
                 locationName     : req.body.locationName,
-                createdBy        : userId,
-                file: req.file, // pass file to service
-                storageKey       : key
-            };
-
-            // Create observation
-            const observation = await ObservationService.createObservation(observationPayload,req.logger);
-
-            // Log success
-            req.logger.app.info({
-                endpoint,
-                userId,
-                observationId: observation.id,
-                key,
-                message: 'Observation successfully created'
+                createdBy        : req.body.createdBy,
+                file             : req.file
+                    ? {
+                        originalname: req.file.originalname,
+                        mimetype    : req.file.mimetype,
+                        size        : req.file.size
+                    }
+                    : null
             });
 
-            res.status(201).json({
-                status : 'success',
-                code   : 201,
-                message: 'Uploaded',
-                data   : observation
-            });
+            try {
+                //  Log the incoming request
+                logEvent(req, 'info', { endpoint, userId, hasFile: !!req.file, body: buildAuditRequest() });
 
-        } catch (error) {
-            console.error('UPLOAD ERROR:', error);
-             // Log error
-            req.logger.app.error({
-                endpoint,
-                userId,
-                error: error.message,
-                stack: error.stack,
-                message: 'Failed to create observation'
-            });
-            next(error);
-        }
+                //  Validate file
+                if (!req.file) {
+                    await auditEvent(req, {
+                        status    : 'failed',
+                        username  : userId,
+                        moduleCode: 'OBSERVATION',
+                        action    : 'CREATE',
+                        log       : 'Image not provided',
+                        request   : buildAuditRequest(),
+                        ...client
+                    });
+                    return res.status(400).json({ error: 'Image required' });
+                }
+
+                //  Validate required fields
+                const requiredFields = [
+                    'speciesId',
+                    'kingdomGroup',
+                    'observedAt',
+                    'latitude',
+                    'longitude',
+                    'locationName',
+                    'createdBy'
+                ];
+                const missingFields = validateFields(req.body, requiredFields);
+                if (missingFields.length > 0) {
+                    logEvent(req, 'warn', { endpoint, userId, missingFields, message: 'Missing required fields' });
+                    return res.status(400).json({ error: `Missing required fields: ${missingFields.join(', ')}` });
+                }
+
+                //  Prepare storage key
+                const today = new Date().toISOString().split('T')[0];
+                const ext = path.extname(req.file.originalname);
+                const filename = `${uuidv4()}${ext}`;
+                const storageKey = `observations/${userId}/${today}/${filename}`;
+
+                const observationPayload = {
+                    ...buildAuditRequest(),
+                    createdBy: userId,
+                    file     : req.file,
+                    storageKey,
+                    images   : [{ imagePath: storageKey, mimeType: req.file.mimetype }]
+                };
+
+                //  Create observation
+                const observation = await ObservationService.createObservation(observationPayload, req.logger);
+
+                //  Audit success
+                await auditEvent(req, {
+                    status    : 'success',
+                    username  : userId,
+                    moduleCode: 'OBSERVATION',
+                    action    : 'CREATE',
+                    log       : 'Observation created successfully',
+                    request   : buildAuditRequest(),
+                    entityId  : observation.id,
+                    ...client
+                });
+
+                return res.status(201).json({
+                    status : 'success',
+                    code   : 201,
+                    message: 'Observation uploaded',
+                    data   : observation
+                });
+
+            } catch (error) {
+                logEvent(req, 'error', { endpoint, userId, message: 'Failed to create observation', error: error.message });
+
+                await auditEvent(req, {
+                    status    : 'failed',
+                    username  : userId,
+                    moduleCode: 'OBSERVATION',
+                    action    : 'CREATE',
+                    log       : 'Failed to create observation',
+                    request   : buildAuditRequest(),
+                    entityId  : null,
+                    ...client
+                });
+
+                next(error);
+            }
     }
+
 }
 
 module.exports = new ObservationController();

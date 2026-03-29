@@ -230,12 +230,13 @@ class ObservationService {
                 message: 'Observation record created in DB'
             });
             // Create associated images
+            console.log('Images:', images);
             if (Array.isArray(images) && images.length > 0) {
                 for (const img of images) {
                     await ObservationImage.create({
-                    observationId: observation.id,
-                    imagePath: img.imagePath,
-                    mimeType: img.mimeType
+                        observationId: observation.id,
+                        imagePath: img.imagePath,
+                        mimeType: img.mimeType
                     }, { transaction: t });
 
                     logger.app.info({

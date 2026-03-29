@@ -21,7 +21,7 @@ async up(queryInterface, Sequelize) {
         type:Sequelize.STRING(250),
         allowNull: false,
     },
-    
+
     ecosystem_secondary_type:{
         type:Sequelize.STRING(250),
         allowNull: false,
