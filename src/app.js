@@ -11,6 +11,8 @@ const responseTimeMiddleware = require('./middlewares/response-time.middleware')
 const rateLimitMiddleware = require('./middlewares/rate-limiter.middleware');
 const { globalLimiter } = require('./config/rate-limiter')
 
+// TODO: CORS & Helmet Security
+
 const app = express();
 
 app.set('trust proxy', true);

@@ -100,3 +100,16 @@ docker compose run -e NODE_ENV=test node-app npx sequelize-cli db:seed:all
 Finally, run your unit tests:
 
 npm test
+
+
+
+# Redis access and check key via docker
+docker exec -it redis redis-cli
+# List all keys:
+KEYS *
+
+# Get a specific refresh token:
+GET refresh:<userId>
+
+# Check a blacklisted token:
+GET blacklist:<jti>

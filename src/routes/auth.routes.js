@@ -160,6 +160,7 @@ router.post('/login', rateLimitMiddleware(authLimiter), AuthController.login);
 router.post('/register', rateLimitMiddleware(authLimiter), AuthController.register);
 
 router.post('/refresh',  rateLimitMiddleware(refreshLimiter),AuthController.refreshToken);
+
 router.post('/logout',rateLimitMiddleware(logoutLimiter),AuthController.logout);
 
 

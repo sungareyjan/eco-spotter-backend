@@ -1,11 +1,5 @@
 const { RateLimiterRedis } = require('rate-limiter-flexible');
-const Redis = require('ioredis');
-
-const redis = new Redis({
-    host: process.env.REDIS_HOST || '127.0.0.1',
-    port: process.env.REDIS_PORT || 6379,
-    enableOfflineQueue: false,
-});
+const redis = require('./redis');
 
 // Key generator (IP + user if available)
 const getKey = (req) => {
@@ -54,6 +48,8 @@ const logoutLimiter = new RateLimiterRedis({
     points: 30,
     duration: 60,
 });
+
+
 
 module.exports = {
     redis,
