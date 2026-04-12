@@ -9,19 +9,19 @@ module.exports = {
 
         const users = [
             {
-                username     : 'admin',
+                // username     : 'admin',
                 email        : 'admin@gmail.com',
             },
             {
-                username     : 'juan_dela_cruz',
+                // username     : 'juan_dela_cruz',
                 email        : 'juandelacruz@gmail.com',
             },
             {
-                username     : 'pedro',
+                // username     : 'pedro',
                 email        : 'pedro@gmail.com',
             },
             {
-                username     : 'maria',
+                // username     : 'maria',
                 email        : 'maria@gmail.com',
             }
         ];
@@ -29,7 +29,7 @@ module.exports = {
         // Map users to DB format
         const usersToInsert = users.map(user => ({
             public_id     : uuidv4(),
-            username      : user.username,
+            // username      : user.username,
             email         : user.email,
             password      : passwordHash,
             deleted_at    : null,

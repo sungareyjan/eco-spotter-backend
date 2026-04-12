@@ -1,4 +1,4 @@
-const { Role, User, RoleUser, sequelize } = require('../models');
+const { Role, User,UserProfile, RoleUser, sequelize } = require('../models');
 const { setRefreshToken, getRefreshToken, deleteRefreshToken, blacklistToken, isBlacklisted} = require('./token-store.service');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -70,7 +70,6 @@ class AuthService {
             middleName   : userData.middleName,
             lastName     : userData.lastName,
             extensionName: userData.extensionName,
-            username     : userData.username,
             email        : userData.email,
             gender       : userData.gender,
             birthday     : userData.birthday,
@@ -81,21 +80,22 @@ class AuthService {
     async register(payload) {
         const transaction = await sequelize.transaction();
         try {
-            const { username, email, password } = payload;
+            const { email, password ,firstName,lastName} = payload;
 
             if (await User.findOne({ where: { email }, transaction })) {
                 throw new Error('Email already in use');
             }
-            if (await User.findOne({ where: { username }, transaction })) {
-                throw new Error('Username already in use');
-            }
-
             const hashedPassword = await bcrypt.hash(password, 10);
 
             const user = await User.create({
-                username,
                 email,
                 password: hashedPassword,
+            }, { transaction });
+
+            const userProfile = await UserProfile.create({
+                userId:user.id,
+                firstName,
+                lastName,
             }, { transaction });
 
             await RoleUser.create({ user_id: user.id }, { transaction });

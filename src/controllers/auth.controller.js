@@ -14,11 +14,12 @@ class AuthController {
 
     async register(req, res, next) {
         try {
-            const { email, password, username } = req.body;
+            const { email, password,firstName, lastName } = req.body;
             const invalidFields = [];
             if (!email) invalidFields.push('email');
             if (!password) invalidFields.push('password');
-            if (!username) invalidFields.push('username');
+            if (!firstName) invalidFields.push('firstName');
+            if (!lastName) invalidFields.push('lastName');
 
             if (invalidFields.length > 0) {
                 throw errorTypes.BadRequest(
