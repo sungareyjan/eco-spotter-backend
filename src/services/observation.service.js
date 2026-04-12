@@ -1,5 +1,9 @@
 const { sequelize,Observation, User, ObservationImage, Species, EcosystemSpecificType, EcosystemTertiaryType, EcosystemSecondaryType, EcosystemPrimaryType } = require('../models');
 const storage = require('../services/storage.service');
+const getFileType = async (buffer) => {
+    const mod = await import('file-type');
+    return mod.fileTypeFromBuffer(buffer);
+};
 /**
  * Get observation with optional search and pagination
  * @param {Object} options
@@ -153,23 +157,11 @@ class ObservationService {
 
     async createObservation(payload,logger) {
         let t; // define outside try
-        const { file, storageKey, createdBy, speciesId, kingdomGroup, description, observedAt, latitude, longitude, locationName, images, proposedSpeciesId } = payload;
+        const { files, createdBy, speciesId, kingdomGroup, description, observedAt, latitude, longitude, locationName, images, proposedSpeciesId } = payload;
 
         try {
-            t = await sequelize.transaction(); // start transaction
-            console.log('Payload:', payload);
-            // Upload file to MinIO
-            logger.app.info({
-                createdBy,
-                endpoint: 'createObservation',
-                payloadSummary: {
-                    hasFile: !!file,
-                    locationName,
-                    speciesId
-                },
-                message: 'Starting observation creation'
-            });
 
+            console.log('Payload:', payload);
             if (!payload) {
                 logger.app.warn({
                     createdBy,
@@ -178,12 +170,46 @@ class ObservationService {
                 throw new Error('Payload is required');
             }
             // Upload file to MinIO
-            if (file && storageKey) {
-                await storage.upload(file.buffer, storageKey, file.mimetype);
+            logger.app.info({
+                createdBy,
+                endpoint: 'createObservation',
+                payloadSummary: {
+                    fileCount: files?.length || 0,
+                    locationName,
+                    speciesId
+                },
+                message: 'Starting observation creation'
+            });
+
+            // Validate files (before transaction)
+            if (Array.isArray(files) && files.length > 0) {
+                for (const f of files) {
+                    const type = await getFileType(f.file.buffer);
+
+                    if (!type || !type.mime.startsWith('image/')) {
+                        throw new Error('Invalid media file detected');
+                    }
+                }
+            }
+
+            t = await sequelize.transaction(); // start transaction
+
+            // Upload file to MinIO
+            if (Array.isArray(files) && files.length > 0) {
+                await Promise.all(
+                    files.map(img =>
+                        storage.upload(
+                            img.file.buffer,
+                            img.storageKey,
+                            img.file.mimetype
+                        )
+                    )
+                );
+
                 logger.app.info({
                     createdBy,
-                    storageKey,
-                    message: 'File uploaded to MinIO successfully'
+                    count: files.length,
+                    message: 'All files uploaded to MinIO'
                 });
             }
             // Validate species
@@ -229,23 +255,26 @@ class ObservationService {
                 observationId: observation.id,
                 message: 'Observation record created in DB'
             });
+
             // Create associated images
             console.log('Images:', images);
-            if (Array.isArray(images) && images.length > 0) {
-                for (const img of images) {
-                    await ObservationImage.create({
-                        observationId: observation.id,
-                        imagePath: img.imagePath,
-                        mimeType: img.mimeType
-                    }, { transaction: t });
-
-                    logger.app.info({
-                        createdBy,
-                        observationId: observation.id,
-                        imagePath: img.imagePath,
-                        message: 'Observation image saved in DB'
-                    });
+            if (Array.isArray(files) && files.length > 0) {
+                for (const img of files) {
+                    await ObservationImage.create(
+                        {
+                            observationId: observation.id,
+                            imagePath: img.storageKey,
+                            mimeType: img.file.mimetype
+                        },
+                        { transaction: t }
+                    );
                 }
+
+                logger.app.info({
+                    createdBy,
+                    count: files.length,
+                    message: 'All files uploaded to MinIO'
+                });
             }
 
             const createdObservation = await Observation.findByPk(observation.id, {

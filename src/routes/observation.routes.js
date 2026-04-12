@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const upload = require('../middlewares/upload.middleware');
 const  ObservationController = require('../controllers/observation.controller');
+
+const rateLimitMiddleware = require('../middlewares/rate-limiter.middleware');
+const { heavyLimiter } = require('../config/rate-limiter');
 /**
  * @swagger
  * tags:
@@ -144,6 +147,6 @@ const  ObservationController = require('../controllers/observation.controller');
  *                       example: 1
  */
 router.get('/',ObservationController.getAllObservation);
-router.post('/',upload.single('image'),ObservationController.postObservation);
+router.post('/',  upload.array('images', 5),rateLimitMiddleware(heavyLimiter),ObservationController.postObservation);
 
 module.exports = router;

@@ -3,8 +3,8 @@ const validateFields = require('../utils/validate-fields');
 const { extractClientInfo } = require('../utils/device-info');
 const { logEvent, auditEvent } = require('../utils/log-and-audit');
 const { v4: uuidv4 } = require('uuid');
-const path = require('path');
 
+const path = require('path');
 class ObservationController{
 
     async getAllObservation(req,res){
@@ -43,21 +43,19 @@ class ObservationController{
                 longitude        : req.body.longitude,
                 locationName     : req.body.locationName,
                 createdBy        : req.body.createdBy,
-                file             : req.file
-                    ? {
-                        originalname: req.file.originalname,
-                        mimetype    : req.file.mimetype,
-                        size        : req.file.size
-                    }
-                    : null
+                files            : req.files?.map(file => ({
+                    originalname: file.originalname,
+                    mimetype    : file.mimetype,
+                    size        : file.size
+                })) || []
             });
 
             try {
                 //  Log the incoming request
-                logEvent(req, 'info', { endpoint, userId, hasFile: !!req.file, body: buildAuditRequest() });
+                logEvent(req, 'info', { endpoint, userId, fileCount: req.files?.length || 0, body: buildAuditRequest() });
 
                 //  Validate file
-                if (!req.file) {
+                if (!req.files || req.files.length === 0) {
                     await auditEvent(req, {
                         status    : 'failed',
                         username  : userId,
@@ -88,16 +86,26 @@ class ObservationController{
 
                 //  Prepare storage key
                 const today = new Date().toISOString().split('T')[0];
-                const ext = path.extname(req.file.originalname);
-                const filename = `${uuidv4()}${ext}`;
-                const storageKey = `observations/${userId}/${today}/${filename}`;
+                const uploadedImages = req.files.map(file => {
+                    const ext = path.extname(file.originalname);
+                    const filename = `${uuidv4()}${ext}`;
+                    const storageKey = `observations/${userId}/${today}/${filename}`;
+
+                    return {
+                        file,
+                        storageKey,
+                        mimeType: file.mimetype
+                    };
+                });
 
                 const observationPayload = {
                     ...buildAuditRequest(),
                     createdBy: userId,
-                    file     : req.file,
-                    storageKey,
-                    images   : [{ imagePath: storageKey, mimeType: req.file.mimetype }]
+                    files: uploadedImages,
+                    images: uploadedImages.map(img => ({
+                        imagePath: img.storageKey,
+                        mimeType: img.mimeType
+                    }))
                 };
 
                 //  Create observation
