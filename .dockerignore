@@ -1,13 +1,51 @@
+# -------------------------
+# Dependencies
+# -------------------------
 node_modules
-npm-debug.log
+.pnpm-store
+
+# -------------------------
+# Logs
+# -------------------------
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# -------------------------
+# System files
+# -------------------------
 .DS_Store
-/logs
 
-# .env
-# .env.*
-# .env-*
+# -------------------------
+# Git
+# -------------------------
+.git
+.gitignore
 
-*-lock.json
-*.lock
+# -------------------------
+# Environment (IMPORTANT)
+# -------------------------
+.env
+.env.*
+!.env.example
 
-DockerfileProduction
+# -------------------------
+# Build / Cache
+# -------------------------
+dist
+build
+.tmp
+.cache
+coverage
+
+# -------------------------
+# Docker
+# -------------------------
+Dockerfile
+
+# -------------------------
+# Misc
+# -------------------------
+*.zip
+uploads
