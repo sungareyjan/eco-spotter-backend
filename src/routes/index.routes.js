@@ -8,7 +8,7 @@ const userRoutes = require('./user.routes');
 const observationRouter = require('./observation.routes');
 const speciesRouter = require('./species.routes')
 const ecosystemRouter = require('./ecosystem.routes');
-
+const dashboardRouter = require('./dashboard.routes')
 
 // example
 router.use('/user-examples', userExampleRoutes);
@@ -22,5 +22,6 @@ router.use('/users', authenticateJWT,userRoutes); //With auth
 router.use('/observations', observationRouter);
 router.use('/species',speciesRouter)
 router.use('/ecosystem',ecosystemRouter);
+router.use('/dashboard',dashboardRouter);
 
 module.exports = router;
