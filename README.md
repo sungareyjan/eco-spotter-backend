@@ -43,6 +43,9 @@ your-domain/api-docs/
 
 ### S3/Minio storage
 
+http://localhost:9001/
+ then login using MINIO_ROOT_USER and MINIO_ROOT_PASSWORD
+
 # Unit test
 Unit Testing (Backend)
 
@@ -102,14 +105,13 @@ Finally, run your unit tests:
 npm test
 
 
-
 # Redis access and check key via docker
 docker exec -it redis redis-cli
-# List all keys:
+### List all keys:
 KEYS *
 
-# Get a specific refresh token:
+### Get a specific refresh token:
 GET refresh:<userId>
 
-# Check a blacklisted token:
+### Check a blacklisted token:
 GET blacklist:<jti>

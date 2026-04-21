@@ -1,4 +1,5 @@
-FROM node:21-alpine
+FROM node:20-alpine
+
 
 RUN apk add --no-cache libc6-compat && \
 npm install -g pnpm@8.14.1
