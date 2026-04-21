@@ -62,7 +62,7 @@ class ObservationService {
                 required: false,
                 attributes: [
                     'publicId',
-                    'username',
+                    // 'username',
                 ]
             }, {
                 model: Species,
@@ -135,7 +135,7 @@ class ObservationService {
                 observer: obs.creator
                     ? {
                         publicId: obs.creator.publicId,
-                        username: obs.creator.username
+                        // username: obs.creator.username
                     }
                     : null,
                 images: obs.ObservationImages?.map(img => ({
@@ -287,7 +287,7 @@ class ObservationService {
                     {
                         model: User,
                         as: 'creator',
-                        attributes: ['publicId', 'username']
+                        attributes: ['publicId']
                     },
                     {
                         model: Species,
@@ -350,7 +350,7 @@ class ObservationService {
                 } : null,
                 observer: obs.creator ? {
                     publicId: obs.creator.publicId,
-                    username: obs.creator.username
+                    // username: obs.creator.username
                 } : null,
                 images: obs.ObservationImages?.map(img => ({
                     publicId: img.publicId,
