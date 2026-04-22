@@ -3,7 +3,7 @@ const { User, RoleUser, Role, UserProfile } = require('../models');
 class UserService {
     async getAllUsersWithAccess() {
         const users = await User.findAll({
-            attributes: ['publicId', 'username', 'email', 'status'],
+            attributes: ['publicId', 'email', 'status'],
             include   : this._userIncludes()
         });
 
@@ -13,7 +13,7 @@ class UserService {
     async getUserByPublicId(publicId) {
         const user = await User.findOne({
             where     : { publicId },
-            attributes: ['publicId',  'username', 'email', 'status'],
+            attributes: ['publicId', 'email', 'status'],
             include   : this._userIncludes()
         });
 
@@ -52,7 +52,6 @@ class UserService {
         return {
             user: {
                 publicId     : user.publicId,
-                username     : user.username,
                 email        : user.email,
                 status       : user.status,
                 profiles
