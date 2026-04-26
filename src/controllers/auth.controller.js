@@ -136,13 +136,10 @@ class AuthController {
 
             const refreshToken = req.cookies?.refreshToken;
 
-            if (req.user && refreshToken) {
-                await authService.logout(
-                    req.user.id,
-                    accessToken,
-                    refreshToken
-                );
-            }
+            await authService.logout(
+                accessToken,
+                refreshToken
+            );
 
             res.clearCookie('accessToken', cookieOptions);
             res.clearCookie('refreshToken', cookieOptions);

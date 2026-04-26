@@ -173,23 +173,39 @@ class AuthService {
         };
     }
 
-    async logout(userId, accessToken, refreshToken) {
-        if (userId) await deleteRefreshToken(userId);
-
+    async logout(accessToken, refreshToken) {
+        let publicId = null;
 
         if (accessToken) {
-        try {
-            const decoded = jwt.decode(accessToken);
-            if (decoded?.jti) await blacklistToken(decoded.jti, 60 * 15); // 15 min
-        } catch {}
+            try {
+                const decoded = jwt.verify(accessToken, JWT_SECRET);
+
+                publicId = decoded.id;
+
+                if (decoded?.jti) {
+                    await blacklistToken(decoded.jti, ACCESS_TTL);
+                }
+            } catch (err) {
+                throw new Error(`Invalid access token: ${err.message}`);
+            }
+        }
+
+        if (publicId) {
+            await deleteRefreshToken(publicId);
         }
 
         if (refreshToken) {
-        try {
-            const decoded = jwt.decode(refreshToken);
-            if (decoded?.jti) await blacklistToken(decoded.jti, REFRESH_TTL);
-        } catch {}
+            try {
+                const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
+
+                if (decoded?.jti) {
+                    await blacklistToken(decoded.jti, REFRESH_TTL);
+                }
+            } catch (err) {
+                throw new Error(`Invalid refresh token: ${err.message}`);
+            }
         }
+
     }
 }
 
