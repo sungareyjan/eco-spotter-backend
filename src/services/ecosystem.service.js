@@ -9,7 +9,7 @@ class EcosystemService{
     }
 
     async getSecondaryTypes(primaryTypeKey){
-        return await SECONDARY_TYPES[primaryTypeKey] || [];
+        return await SECONDARY_TYPES[primaryTypeKey.toUpperCase()] || [];
     }
 
     /**

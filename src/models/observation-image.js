@@ -30,8 +30,14 @@ module.exports = (sequelize, DataTypes) => {
             allowNull:true,
             field:'thumbnail_path'
         },
+
+        iconPath:{
+            type: DataTypes.STRING,
+            allowNull:true,
+            field:'icon_path'
+        },
         mimeType:{
-            type: DataTypes.STRING(20),
+            type: DataTypes.STRING(100),
             allowNull:true,
             field:'mime_type'
         }

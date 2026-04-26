@@ -89,7 +89,7 @@ class ObservationController{
                 const uploadedImages = req.files.map(file => {
                     const ext = path.extname(file.originalname);
                     const filename = `${uuidv4()}${ext}`;
-                    const storageKey = `observations/${userId}/${today}/${filename}`;
+                    const storageKey = `observations/${userId}/${today}/original/${filename}`;
 
                     return {
                         file,

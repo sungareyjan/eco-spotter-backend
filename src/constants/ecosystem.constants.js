@@ -1,8 +1,8 @@
 'use strict';
 
 const PRIMARY_TYPES = Object.freeze({
-    TERRESTRIAL: 'Terrestrial Ecosystem',
-    AQUATIC: 'Aquatic Ecosystem'
+    TERRESTRIAL: 'Terrestrial',
+    AQUATIC: 'Aquatic'
 });
 
 const SECONDARY_TYPES = Object.freeze({

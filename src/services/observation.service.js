@@ -1,5 +1,6 @@
 const { sequelize,Observation, User, ObservationImage, Species, EcosystemSpecificType, EcosystemTertiaryType, EcosystemSecondaryType, EcosystemPrimaryType } = require('../models');
-const storage = require('../services/storage.service');
+// const storage = require('../services/storage.service');
+const { uploadImage } = require('../services/media.service');
 const getFileType = async (buffer) => {
     const mod = await import('file-type');
     return mod.fileTypeFromBuffer(buffer);
@@ -196,15 +197,19 @@ class ObservationService {
 
             // Upload file to MinIO
             if (Array.isArray(files) && files.length > 0) {
-                await Promise.all(
+
+                const uploadedFiles = await Promise.all(
                     files.map(img =>
-                        storage.upload(
+                        uploadImage(
                             img.file.buffer,
                             img.storageKey,
                             img.file.mimetype
                         )
                     )
                 );
+                files.forEach((img, index) => {
+                    img.uploaded = uploadedFiles[index];
+                });
 
                 logger.app.info({
                     createdBy,
@@ -263,8 +268,10 @@ class ObservationService {
                     await ObservationImage.create(
                         {
                             observationId: observation.id,
-                            imagePath: img.storageKey,
-                            mimeType: img.file.mimetype
+                            imagePath: img.uploaded.imagePath,
+                            thumbnailPath: img.uploaded.thumbnailPath || null,
+                            iconPath: img.uploaded.iconPath || null,
+                            mimeType: img.file.mimetype,
                         },
                         { transaction: t }
                     );
@@ -282,7 +289,7 @@ class ObservationService {
                     {
                         model: ObservationImage,
                         as: 'ObservationImages',
-                        attributes: ['publicId', 'imagePath', 'thumbnailPath', 'mimeType']
+                        attributes: ['publicId', 'imagePath', 'thumbnailPath','iconPath', 'mimeType']
                     },
                     {
                         model: User,
@@ -356,6 +363,7 @@ class ObservationService {
                     publicId: img.publicId,
                     imageUrl: img.imagePath,
                     thumbnailUrl: img.thumbnailPath || null,
+                    iconPath: img.iconPath || null,
                     mimeType: img.mimeType
                 })) || [],
                 timestamps: {
