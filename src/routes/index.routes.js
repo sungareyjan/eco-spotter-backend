@@ -10,6 +10,10 @@ const speciesRouter = require('./species.routes')
 const ecosystemRouter = require('./ecosystem.routes');
 const dashboardRouter = require('./dashboard.routes')
 
+
+const controller = require('../controllers/csrf.controller');
+router.get('/csrf-token', controller.getCsrfToken);
+
 // example
 router.use('/user-examples', userExampleRoutes);
 

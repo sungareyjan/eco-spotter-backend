@@ -4,6 +4,8 @@ const AuthController = require('../controllers/auth.controller');
 
 const rateLimitMiddleware = require('../middlewares/rate-limiter.middleware');
 const { authLimiter, refreshLimiter,logoutLimiter } = require('../config/rate-limiter');
+const { doubleCsrfProtection } = require('../middlewares/csrf.middleware');
+
 /**
  * @swagger
  * tags:
@@ -74,7 +76,7 @@ const { authLimiter, refreshLimiter,logoutLimiter } = require('../config/rate-li
  *       401:
  *         description: Unauthorized (invalid email or password)
  */
-router.post('/login', rateLimitMiddleware(authLimiter), AuthController.login);
+router.post('/login', rateLimitMiddleware(authLimiter), doubleCsrfProtection, AuthController.login);
 
 /**
  * @swagger
@@ -157,11 +159,11 @@ router.post('/login', rateLimitMiddleware(authLimiter), AuthController.login);
  *         description: Missing or invalid fields
  */
 
-router.post('/register', rateLimitMiddleware(authLimiter), AuthController.register);
+router.post('/register', rateLimitMiddleware(authLimiter), doubleCsrfProtection, AuthController.register);
 
-router.post('/refresh',  rateLimitMiddleware(refreshLimiter),AuthController.refreshToken);
+router.post('/refresh',  rateLimitMiddleware(refreshLimiter),doubleCsrfProtection, AuthController.refreshToken);
 
-router.post('/logout',rateLimitMiddleware(logoutLimiter),AuthController.logout);
+router.post('/logout',rateLimitMiddleware(logoutLimiter),doubleCsrfProtection, AuthController.logout);
 
 
 module.exports = router;

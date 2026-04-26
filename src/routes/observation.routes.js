@@ -5,6 +5,9 @@ const  ObservationController = require('../controllers/observation.controller');
 
 const rateLimitMiddleware = require('../middlewares/rate-limiter.middleware');
 const { heavyLimiter } = require('../config/rate-limiter');
+
+const { doubleCsrfProtection } = require('../middlewares/csrf.middleware');
+
 /**
  * @swagger
  * tags:
@@ -147,6 +150,6 @@ const { heavyLimiter } = require('../config/rate-limiter');
  *                       example: 1
  */
 router.get('/',ObservationController.getAllObservation);
-router.post('/',  upload.array('images', 5),rateLimitMiddleware(heavyLimiter),ObservationController.postObservation);
+router.post('/',  upload.array('images', 5),rateLimitMiddleware(heavyLimiter),doubleCsrfProtection, ObservationController.postObservation);
 
 module.exports = router;
