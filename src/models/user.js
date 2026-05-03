@@ -48,8 +48,8 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     User.associate = models => {
-        User.hasMany(models.RoleUser, { as: 'role_users', foreignKey: 'user_id' });
-        User.hasOne(models.UserProfile, { foreignKey: 'user_id', as: 'profile' });
+        User.hasMany(models.RoleUser, { as: 'role_users', foreignKey: 'userId' });
+        User.hasOne(models.UserProfile, { foreignKey: 'userId', as: 'profile' });
         User.hasMany(models.Observation,{foreignKey:'createdBy', as:'observation'});
     };
 

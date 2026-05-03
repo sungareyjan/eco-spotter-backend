@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
                 field: 'extension_name'
             },
             gender: {
-                type: DataTypes.ENUM('male', 'female', 'other', 'prefer_not_to_say'),
+                type: DataTypes.ENUM('Male', 'Female', 'Other', 'Prefer_not_to_say'),
                 allowNull: true
             },
             birthday: {
@@ -63,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     UserProfile.associate = models => {
-        UserProfile.belongsTo(models.User, { as: 'user', foreignKey: 'user_id' });
+        UserProfile.belongsTo(models.User, { as: 'user', foreignKey: 'userId' });
     };
 
     return UserProfile;

@@ -22,6 +22,25 @@ class UserService {
         return this._formatUser(user);
     }
 
+    async updateUser(data,publicId) {
+        const user = await User.findOne({ where: { publicId } });
+
+        const profile = await UserProfile.findOne({
+            where: { userId: user.id }
+        });
+
+        await profile.update(data);
+
+        const result = profile.toJSON();
+
+        delete result.id;
+        delete result.userId;
+        delete result.createdAt;
+        delete result.updatedAt;
+
+        return result;
+    }
+
     // Private method to format user data
     _formatUser(user) {
         const roles = (user.role_users || [])

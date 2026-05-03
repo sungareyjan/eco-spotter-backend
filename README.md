@@ -32,7 +32,7 @@ pnpm create
 pnpm migrate
 
 ### Seed the database
-pnpm seed:all
+pnpm seed
 
 ### Verify setup
 Open your browser or API client (postman) and check that the application is running. Confirm tables and seed data exist in your database.

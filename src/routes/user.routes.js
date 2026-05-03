@@ -1,6 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const UserController = require('../controllers/users.controller');
+const upload = require('../middlewares/upload.middleware');
+
+const rateLimitMiddleware = require('../middlewares/rate-limiter.middleware');
+const { heavyLimiter } = require('../config/rate-limiter');
+
+const { doubleCsrfProtection } = require('../middlewares/csrf.middleware');
 
 /**
  * @swagger
@@ -80,5 +86,7 @@ router.get('', UserController.getAllUsersAccess);
  */
 // GET all users by public id
 router.get('/:publicId', UserController.getAllUserByPublicId);
+
+router.put('/:publicId',rateLimitMiddleware(heavyLimiter),UserController.updateUser)
 
 module.exports = router;

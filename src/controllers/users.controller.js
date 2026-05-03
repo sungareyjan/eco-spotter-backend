@@ -5,7 +5,7 @@ class UserController{
 	async getAllUsersAccess (req, res, next){
 		try {
 			const users = await UserService.getAllUsersWithAccess();
-
+			console.log(req)
 			res.json({
 				success: true,
 				data: users
@@ -35,6 +35,20 @@ class UserController{
 			next(error);
 		}
 	};
+
+	async updateUser(req, res, next) {
+		try {
+			const { publicId } = req.params;
+			const user = await UserService.updateUser(req.body,publicId);
+			return res.json({
+				status: 'success',
+				code  : 200,
+				data: user
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
 }
 
 module.exports = new UserController();
