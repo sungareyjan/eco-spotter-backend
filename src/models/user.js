@@ -44,13 +44,14 @@ module.exports = (sequelize, DataTypes) => {
         tableName: 'users',
         underscored: true,
         timestamps: true,
-        paranoid: true // enables soft deletes using deletedAt
+        paranoid: false // enables soft deletes using deletedAt
     });
 
     User.associate = models => {
         User.hasMany(models.RoleUser, { as: 'role_users', foreignKey: 'userId' });
         User.hasOne(models.UserProfile, { foreignKey: 'userId', as: 'profile' });
         User.hasMany(models.Observation,{foreignKey:'createdBy', as:'observation'});
+        User.hasMany(models.Comment, {foreignKey: 'userId', as: 'comments'});
     };
 
     return User;

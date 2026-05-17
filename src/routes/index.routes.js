@@ -6,10 +6,10 @@ const authRoutes = require('./auth.routes');
 const roleRoutes = require('./role.routes');
 const userRoutes = require('./user.routes');
 const observationRouter = require('./observation.routes');
-const speciesRouter = require('./species.routes')
+const speciesRouter = require('./species.routes');
 const ecosystemRouter = require('./ecosystem.routes');
-const dashboardRouter = require('./dashboard.routes')
-
+const dashboardRouter = require('./dashboard.routes');
+const commentRouter = require('./comment.routes');
 
 const controller = require('../controllers/csrf.controller');
 router.get('/csrf-token', controller.getCsrfToken);
@@ -27,5 +27,6 @@ router.use('/observations', observationRouter);
 router.use('/species',speciesRouter)
 router.use('/ecosystem',ecosystemRouter);
 router.use('/dashboard',dashboardRouter);
+router.use('/comments',commentRouter);
 
 module.exports = router;

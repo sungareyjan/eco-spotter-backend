@@ -26,7 +26,7 @@ if powershell
  docker exec -it eco-app /bin/sh
 
 ### Create the database (if it doesn’t exist)
-pnpm create
+pnpm db-create
 
 ### Run migrations
 pnpm migrate

@@ -5,13 +5,13 @@
 		"test": "set ENV_FILE=.env.tes NODE_ENV=test && jest --detectOpenHandles --forceExit",
 		"migrate": "pnpm sequelize-cli db:migrate",
 		"drop": "pnpm sequelize-cli db:migrate:undo",
-		"create": "pnpm sequelize-cli db:create",
+		"db-create": "pnpm sequelize-cli db:create",
 		"seed": "pnpm sequelize-cli db:seed:all",
 		"check": "DEBUG=sequelize:* pnpm sequelize-cli db:seed:all"
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.1024.0",
-		"archiver": "^7.0.1",
+		"archiver": "^6.0.2",
 		"bcrypt": "^6.0.0",
 		"cookie-parser": "^1.4.7",
 		"csrf-csrf": "^4.0.3",
@@ -26,6 +26,7 @@
 		"pino": "^10.3.1",
 		"pino-roll": "^4.0.0",
 		"rate-limiter-flexible": "^10.0.1",
+		"readable-stream": "^4.7.0",
 		"sequelize": "^6.37.8",
 		"sequelize-cli": "^6.6.5",
 		"sharp": "^0.34.5",
