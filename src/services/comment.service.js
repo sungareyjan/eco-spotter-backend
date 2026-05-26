@@ -2,7 +2,12 @@ const { Comment, Observation, User ,UserProfile } = require('../models');
 
 class CommentService{
 
-    async getCommentsByObservation(publicId) {
+    async getCommentsByObservation({publicId, page=1, limit=10 }={}) {
+
+        page = page && page > 0 ? page : 1;
+        limit = limit && limit > 0 ? limit : 10;
+        const offset = (page - 1) * limit;
+        const where = {};
 
         const observation = await Observation.findOne({
             where: { public_id: publicId },
@@ -14,11 +19,11 @@ class CommentService{
             throw new Error('Observation not found');
         }
 
-        const comments = await Comment.findAll({
+        const { rows, count } = await Comment.findAndCountAll({
             where: {
                 observationId: observation.id,
             },
-
+            distinct: true,
             attributes: [
                 'publicId',
                 'content',
@@ -45,33 +50,45 @@ class CommentService{
                     }]
                 }
             ],
-
+            offset,
+            limit,
             order: [['createdAt', 'DESC']]
         });
-
-        return comments;
+        const data = rows;
+        return { data, pagination: {total: count, page, limit, totalPages: Math.ceil(count / limit)} };
     }
     async createComments(payload){
+        const { observationId, content, userId, isExpertComment = false } = payload;
 
-
+        if (!observationId || !content) {
+            const error = new Error('observationId and content are required');
+            error.statusCode = 400;
+            throw error;
+        }
         const observation = await Observation.findOne({
             where: {
-                publicId: payload.observationId
-            }
+                publicId: observationId
+            },
+            attributes: ['id']
         });
 
         const user = await User.findOne({
             where: {
-                publicId: payload.userId
-            }
+                publicId: userId
+            },
+            attributes: ['id']
         });
 
         if (!observation) {
-            throw new Error('Observation not found');
+            const error = new Error('Observation not found');
+            error.statusCode = 404;
+            throw error;
         }
 
         if (!user) {
-            throw new Error('User not found');
+            const error = new Error('User not found');
+            error.statusCode = 404;
+            throw error;
         }
 
         const comment = await Comment.create({
@@ -81,7 +98,18 @@ class CommentService{
             isExpertComment: payload.isExpertComment || false
         });
 
-        return comment;
+        return {
+            publicId: comment.publicId,
+            content: comment.content,
+            isExpertComment: comment.isExpertComment,
+            createdAt: comment.createdAt,
+            observation: {
+                publicId: observationId
+            },
+            user: {
+                publicId: userId
+            }
+        };
     }
 }
 

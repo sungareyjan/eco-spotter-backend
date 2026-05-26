@@ -89,18 +89,6 @@ class ReactionService{
             }
         });
 
-        // const  reactionSummary = await Reaction.findAll({
-        //     where:{
-        //         observationId: observation.id,
-        //     },      attributes: [
-        //             ['observation_id', 'observationId'],
-        //             [fn('COUNT', col('id')), 'count']
-        //         ],
-
-        //         group: ['observation_id'],
-        //         raw: true
-        // })
-
         const [totalReaction, currentUserReaction] = await Promise.all([
             Reaction.count({
                 where: {

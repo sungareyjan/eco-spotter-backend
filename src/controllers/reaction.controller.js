@@ -5,14 +5,9 @@ class ReactionController{
 
     async getReaction(req, res, next){
         let { page, limit } = req.query;
-        // page  = parseInt(page, 10);
-        // limit = parseInt(limit, 10);
-        // if (isNaN(page) || page < 1) page = 1;
-        // if (isNaN(limit) || limit < 1) limit = 10;
-
         try {
             const { publicId } = req.params;
-            console.log(publicId)
+
             const reaction = await ReactionService.getReaction({
                 observationId: publicId,
                 page: Number(page) || 1,
