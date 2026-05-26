@@ -10,7 +10,7 @@ const speciesRouter = require('./species.routes');
 const ecosystemRouter = require('./ecosystem.routes');
 const dashboardRouter = require('./dashboard.routes');
 const commentRouter = require('./comment.routes');
-
+const reactionRouter =  require('./reaction.routes');
 const controller = require('../controllers/csrf.controller');
 router.get('/csrf-token', controller.getCsrfToken);
 
@@ -28,5 +28,6 @@ router.use('/species',speciesRouter)
 router.use('/ecosystem',ecosystemRouter);
 router.use('/dashboard',dashboardRouter);
 router.use('/comments',commentRouter);
+router.use('/reactions',reactionRouter);
 
 module.exports = router;

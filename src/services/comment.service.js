@@ -53,7 +53,6 @@ class CommentService{
     }
     async createComments(payload){
 
-        console.log(payload);
 
         const observation = await Observation.findOne({
             where: {
@@ -65,7 +64,6 @@ class CommentService{
             where: {
                 publicId: payload.userId
             }
-
         });
 
         if (!observation) {
